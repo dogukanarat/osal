@@ -1,5 +1,5 @@
-#include "os_socket.hpp"
-#include "os_memory.hpp"
+#include "os_socket.h"
+#include "os_memory.h"
 
 OS_socket_address_in_t *OS_socket_address_in_init( uint16_t d_port_number_u16 )
 {

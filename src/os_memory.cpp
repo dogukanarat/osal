@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "os_memory.hpp"
+#include "os_memory.h"
 
 void *OS_mem_allocate( uint32_t d_size_u32 )
 {

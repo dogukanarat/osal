@@ -1,4 +1,4 @@
-#include "os_thread.hpp"
+#include "os_thread.h"
 
 /**
  * @brief It creates a thread

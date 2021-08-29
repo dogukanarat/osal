@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include "os_timer.hpp"
+#include "os_timer.h"
 
 /**
  * @brief It cause a delay

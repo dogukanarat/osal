@@ -1,13 +1,7 @@
-add_subdirectory(
-    src
-)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true *.h *.hpp *.cpp)
 
-include_directories(
-    src
-)
+set(SOURCES ${SOURCES})
 
-target_include_directories(
-    osal
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+add_library(osal ${SOURCES})
+target_include_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)

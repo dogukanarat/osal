@@ -1,3 +1,6 @@
+#ifndef _OSAL_SOCKET_HPP
+#define _OSAL_SOCKET_HPP
+
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -30,3 +33,5 @@ int OS_close( int socket );
 int OS_connect( int socket, OS_socket_address_in_t *socket_server );
 
 int OS_write( int socket, uint8_t* buffer, int buffer_length );
+
+#endif
