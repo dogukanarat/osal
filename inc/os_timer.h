@@ -3,6 +3,13 @@
 
 #include "stdint.h"
 
-void OS_wait_us( uint32_t d_microsecond_u32 );
+namespace OSAL
+{
+    class Timer
+    {
+        public:
+        static void waitUs( uint32_t d_microsecond_u32 );
+    };
+}
 
 #endif

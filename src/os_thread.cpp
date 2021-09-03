@@ -1,12 +1,14 @@
 #include "os_thread.h"
 
+using namespace OSAL;
+
 /**
  * @brief It creates a thread
  * 
  * @param p_thread_handler_st 
  * @param p_thread 
  */
-void OS_thread_create ( OS_thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
+int Thread::create ( thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
 {
     pthread_create( p_thread_handler_st, NULL, p_thread, NULL );
 }
@@ -16,7 +18,7 @@ void OS_thread_create ( OS_thread_t *p_thread_handler_st, void *(*p_thread)(void
  * 
  * @param d_thread_handler_st 
  */
-void OS_thread_join   ( OS_thread_t d_thread_handler_st )
+int Thread::join   ( thread_t d_thread_handler_st )
 {
     pthread_join( d_thread_handler_st, NULL );
 }

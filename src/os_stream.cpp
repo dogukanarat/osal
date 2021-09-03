@@ -3,15 +3,17 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <stdint.h>
 
+using namespace OSAL;
 
 /**
  * @brief It flush the std::cout buffer
  * 
  */
-void OS_flush()
+void Stream::flush()
 {
-    flush(std::cout);
+    std::flush(std::cout);
 }
 
 /**
@@ -19,11 +21,10 @@ void OS_flush()
  * 
  * @param p_string_buf_u8 
  */
-void OS_display( const char *p_string_buf_u8 )
+void Stream::display( const char *p_string_buf_u8 )
 {
     std::cout << p_string_buf_u8 << std::endl;
-    
-    OS_flush();
+    Stream::flush();
 }
 
 /**
@@ -32,7 +33,7 @@ void OS_display( const char *p_string_buf_u8 )
  * @param format 
  * @param ... 
  */
-void OS_print( const char *format, ...)
+void Stream::print( const char *format, ...)
 {
     va_list arg;
     int done;
