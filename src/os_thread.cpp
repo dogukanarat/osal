@@ -10,7 +10,7 @@ using namespace OSAL;
  */
 int Thread::create ( thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
 {
-    pthread_create( p_thread_handler_st, NULL, p_thread, NULL );
+    return pthread_create( p_thread_handler_st, NULL, p_thread, NULL );
 }
 
 /**
@@ -20,5 +20,5 @@ int Thread::create ( thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
  */
 int Thread::join   ( thread_t d_thread_handler_st )
 {
-    pthread_join( d_thread_handler_st, NULL );
+    return pthread_join( d_thread_handler_st, NULL );
 }
