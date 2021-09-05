@@ -13,5 +13,6 @@ namespace OSAL
     , public Stream
     , public Timer
     , public Mutex
+    , public ThChrono
     { };
 }
