@@ -1,1 +1,2 @@
-# OSAL Layer
+# OSAL Layer Project
+This project aims to create layer between cpp applications and operating system. In this way, even if the operation system is changed or low-level functionality is updated, the application is aimed to be stable and abstacted from operation system and hardware.
