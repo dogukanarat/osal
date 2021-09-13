@@ -22,7 +22,7 @@ namespace OSAL
             pthread_mutex_unlock(&m_mutex);
             pthread_mutex_destroy(&m_mutex);
         };
-
+        
         int Lock()
         {
             return pthread_mutex_lock(&m_mutex);

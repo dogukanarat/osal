@@ -5,6 +5,9 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
 
 namespace OSAL
 {
@@ -19,7 +22,9 @@ namespace OSAL
         static address_in_t* address_in_init( uint16_t d_port_number_u16 );
         static address_in_t* address_in_init_by_name( host_t *host, uint16_t d_port_number_u16 );
 
+        static int _socketDgram();
         static int _socketStream();
+        static int _controlNonBlocking( int socket );
         static int _bind( int socket, address_t* socket_address, length_t socket_length );
         static int _listen( int socket );
         static int _accept( int socket, address_t* socket_client, length_t* socket_length);

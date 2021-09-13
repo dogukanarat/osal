@@ -34,9 +34,23 @@ Socket::address_in_t* Socket::address_in_init_by_name( host_t* host, uint16_t d_
 
 }
 
+int Socket::_socketDgram( )
+{
+    return socket(AF_INET, SOCK_DGRAM, 0);
+}
+
 int Socket::_socketStream( )
 {
     return socket(AF_INET, SOCK_STREAM, 0);
+}
+
+int Socket::_controlNonBlocking( int socket )
+{
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    return setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+    return setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof tv);
 }
 
 int Socket::_bind( int socket, address_t* socket_address, length_t socket_length )
