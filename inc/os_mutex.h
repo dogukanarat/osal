@@ -23,15 +23,15 @@ namespace OSAL
             pthread_mutex_destroy(&m_mutex);
         };
         
-        int Lock()
+        inline int Lock()
         {
             return pthread_mutex_lock(&m_mutex);
         }
-        int TryLock()
+        inline int TryLock()
         {
             return pthread_mutex_trylock(&m_mutex);
         }
-        int Unlock() 
+        inline int Unlock() 
         {
             return pthread_mutex_unlock(&m_mutex);
         }   
