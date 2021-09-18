@@ -51,6 +51,8 @@ int Socket::_controlNonBlocking( int socket )
     // tv.tv_usec = 0;
     // return setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
     // return setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof tv);
+
+    return 0;
 }
 
 int Socket::_bind( int socket, address_t* socket_address, length_t socket_length )
