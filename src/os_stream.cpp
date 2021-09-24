@@ -21,7 +21,7 @@ void Stream::flush()
  * 
  * @param p_string_buf_u8 
  */
-void Stream::display( const char *p_string_buf_u8 )
+void Stream::display(const char *p_string_buf_u8)
 {
     std::cout << p_string_buf_u8 << std::endl;
     Stream::flush();
@@ -33,12 +33,12 @@ void Stream::display( const char *p_string_buf_u8 )
  * @param format 
  * @param ... 
  */
-void Stream::print( const char *format, ...)
+void Stream::print(const char *format, ...)
 {
     va_list arg;
     int done;
 
-    va_start (arg, format);
-    done = vfprintf (stdout, format, arg);
-    va_end (arg);
+    va_start(arg, format);
+    done = vfprintf(stdout, format, arg);
+    va_end(arg);
 }

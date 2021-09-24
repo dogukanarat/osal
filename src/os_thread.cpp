@@ -8,9 +8,9 @@ using namespace OSAL;
  * @param p_thread_handler_st 
  * @param p_thread 
  */
-int Thread::create ( thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
+int Thread::create(thread_t *p_thread_handler_st, void *(*p_thread)(void *))
 {
-    return pthread_create( p_thread_handler_st, NULL, p_thread, NULL );
+    return pthread_create(p_thread_handler_st, NULL, p_thread, NULL);
 }
 
 /**
@@ -18,7 +18,7 @@ int Thread::create ( thread_t *p_thread_handler_st, void *(*p_thread)(void *) )
  * 
  * @param d_thread_handler_st 
  */
-int Thread::join   ( thread_t d_thread_handler_st )
+int Thread::join(thread_t d_thread_handler_st)
 {
-    return pthread_join( d_thread_handler_st, NULL );
+    return pthread_join(d_thread_handler_st, NULL);
 }

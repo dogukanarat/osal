@@ -7,8 +7,8 @@ namespace OSAL
 {
     class Timer
     {
-        public:
-        static void waitUs( uint32_t d_microsecond_u32 );
+    public:
+        static void waitUs(uint32_t d_microsecond_u32);
     };
 }
 

@@ -12,14 +12,15 @@
 namespace OSAL
 {
     class OS
-    : public Memory
-    , public Thread
-    , public Stream
-    , public Timer
-    , public Mutex
-    , public ThChrono
-    , public Socket
-    { };
+        : public Memory,
+          public Thread,
+          public Stream,
+          public Timer,
+          public Mutex,
+          public ThChrono,
+          public Socket
+    {
+    };
 }
 
 #endif

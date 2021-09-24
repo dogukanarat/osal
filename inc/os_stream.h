@@ -5,10 +5,10 @@ namespace OSAL
 {
     class Stream
     {
-        public:
+    public:
         static void flush();
-        static void display( const char *p_string_buf_u8 );
-        static void print( const char *format, ...);
+        static void display(const char *p_string_buf_u8);
+        static void print(const char *format, ...);
     };
 
 }
