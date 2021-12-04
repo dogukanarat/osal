@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include "os_timer.h"
+#include "osal/os_timer.h"
 
 using namespace OSAL;
 

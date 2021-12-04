@@ -1,16 +1,49 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true src/*.cpp)
-file(GLOB_RECURSE HEADERS LIST_DIRECTORIES true inc/*.h)
+project(osal 
+    VERSION 1.1.0
+    LANGUAGES CXX
+    )
 
-enable_testing()
+add_library(
+    ${PROJECT_NAME}
+    )
 
-add_subdirectory(library)
-add_subdirectory(test)
+target_sources(
+    ${PROJECT_NAME}
+    PRIVATE
+        src/os_chrono.cpp
+        src/os_memory.cpp
+        src/os_socket.cpp
+        src/os_stream.cpp
+        src/os_thread.cpp
+        src/os_timer.cpp
+    )
 
-add_library(osal ${SOURCES})
-set_target_properties(osal PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_include_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+include(GNUInstallDirs)
 
-install(TARGETS osal PUBLIC_HEADER DESTINATION include/osal/)
+target_include_directories(
+    ${PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-config
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+
+install(
+    EXPORT ${PROJECT_NAME}-config
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    )
+
+install(
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    )

@@ -1,4 +1,4 @@
-#include "os_thread.h"
+#include "osal/os_thread.h"
 
 using namespace OSAL;
 

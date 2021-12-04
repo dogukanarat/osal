@@ -1,5 +1,5 @@
-#include "os_socket.h"
-#include "os_memory.h"
+#include "osal/os_socket.h"
+#include "osal/os_memory.h"
 
 using namespace OSAL;
 

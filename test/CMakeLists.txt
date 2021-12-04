@@ -1,8 +1,13 @@
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true src/*.cpp)
-file(GLOB_RECURSE HEADERS LIST_DIRECTORIES true inc/.h)
+if(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
-add_executable(osal_unit_testing ${SOURCES})
-target_include_directories(osal_unit_testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
-target_link_libraries(osal_unit_testing PRIVATE gtest osal)
-add_test(test_all osal_unit_testing)
+    add_executable(osal_test main.cpp)
+
+    target_link_libraries(osal_test PRIVATE gtest osal)
+
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+
+    add_test(test_all osal_test)
+
+endif()
+
+

@@ -1,7 +1,7 @@
-#include "os_memory.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "osal/os_memory.h"
 
 using namespace OSAL;
 
