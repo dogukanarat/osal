@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+# add_subdirectory(library)
+
+set(CMAKE_CXX_FLAGS "-g -Wall")
+
 project(osal 
     VERSION 1.1.0
     LANGUAGES CXX
@@ -29,7 +33,9 @@ target_include_directories(
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(
+    ${PROJECT_NAME}
+    PROPERTIES DEBUG_POSTFIX "d")
 
 install(
     TARGETS ${PROJECT_NAME}
@@ -47,3 +53,5 @@ install(
     DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     )
+
+# add_subdirectory(test)

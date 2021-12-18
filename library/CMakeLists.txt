@@ -1,3 +1,3 @@
-if (NOT TARGET gtest_main)
+ if (NOT TARGET gtest_main)
     add_subdirectory(googletest)
-endif() 
+ endif() 

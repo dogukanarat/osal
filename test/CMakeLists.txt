@@ -1,13 +1,21 @@
-if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+enable_testing()
 
-    add_executable(osal_test main.cpp)
+set(${TEST_NAME} ${PROJECT_NAME}}-test)
 
-    target_link_libraries(osal_test PRIVATE gtest osal)
+add_executable(
+    ${TEST_NAME}
+    main.cpp
+    )
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_link_libraries(
+    ${TEST_NAME}
+    gtest_main
+    osal
+    )
 
-    add_test(test_all osal_test)
+add_test(
+    NAME that-test-I-made
+    COMMAND ${TEST_NAME}
+    )
 
-endif()
-
-
+gtest_discover_tests(${TEST_NAME})
