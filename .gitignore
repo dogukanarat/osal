@@ -1,3 +1,6 @@
 .vscode
 build
 out
+cmake/osal-config-release.cmake
+cmake/osal-config-debug.cmake
+cmake/osal-config.cmake

@@ -42,7 +42,7 @@ unset(_expectedTargets)
 
 
 # The installation prefix configured by this project.
-set(_IMPORT_PREFIX "/Users/dogukanarat/Desktop/Workspace/Libraries/osal/out/install/Release")
+set(_IMPORT_PREFIX "/Users/dogukanarat/Desktop/Workspace/Libraries/osal/out/install/Debug")
 
 # Create imported target osal::osal
 add_library(osal::osal STATIC IMPORTED)

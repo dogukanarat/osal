@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
 
-# add_subdirectory(library)
-
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
 project(osal 
@@ -13,10 +11,10 @@ add_library(
     ${PROJECT_NAME}
     )
 
-set_property(
-    TARGET ${PROJECT_NAME}
-    PROPERTY CXX_STANDARD 17
-    )
+# set the C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 target_sources(
     ${PROJECT_NAME}
@@ -30,6 +28,9 @@ target_sources(
     )
 
 include(GNUInstallDirs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 
 target_include_directories(
     ${PROJECT_NAME}
@@ -59,4 +60,6 @@ install(
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     )
 
-# add_subdirectory(test)
+enable_testing()
+
+add_subdirectory(test)

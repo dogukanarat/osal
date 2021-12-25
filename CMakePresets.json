@@ -42,10 +42,16 @@
     ],
     "testPresets": [
         {
-            "name": "Test",
+            "name": "DebugTest",
             "description": "",
             "displayName": "",
             "configurePreset": "Debug"
+        },
+        {
+            "name": "ReleaseTest",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Release"
         }
     ]
 }
