@@ -1,12 +1,12 @@
-/* test_posix.c - Comprehensive Unit Tests for OSAL POSIX */
+/* test_posix.c - Comprehensive Unit Tests for OSAL POSIX (Unity Version) */
 
 #include "osal/osalMutex.h"
 #include "osal/osalSemaphore.h"
 #include "osal/osalMessageQueue.h"
 #include "osal/osalTime.h"
 #include "osal/osalTypes.h"
+#include "unity/unity.h"
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
@@ -14,7 +14,6 @@
 #include <pthread.h>
 
 /* --- MOCK CONTROL --- */
-/* We use global variables to control the behavior of mocks */
 static int mock_mutex_init_ret = 0;
 static int mock_mutex_lock_ret = 0;
 static int mock_clock_gettime_ret = 0;
@@ -60,7 +59,6 @@ int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
 int __wrap_nanosleep(const struct timespec *req, struct timespec *rem)
 {
     (void)rem;
-    /* Advance mock time by sleep duration */
     mock_current_time.tv_sec += req->tv_sec;
     mock_current_time.tv_nsec += req->tv_nsec;
     if (mock_current_time.tv_nsec >= 1000000000)
@@ -141,8 +139,6 @@ int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     (void)thread; (void)attr;
     if (mock_pthread_create_ret == 0)
     {
-        /* We don't actually spawn a thread in unit tests usually, 
-           unless we want to test concurrency. For now, just succeed. */
         return 0;
     }
     return mock_pthread_create_ret;
@@ -191,7 +187,6 @@ int __wrap_pthread_cond_broadcast(pthread_cond_t *cond)
     return 0;
 }
 
-
 /* --- TEST CASES --- */
 
 void test_mutex(void)
@@ -199,26 +194,21 @@ void test_mutex(void)
     printf("[Mutex] Running tests...\n");
     reset_mocks();
 
-    /* 1. Create Success */
     osalMutexHandle_t m = osalMutexCreate(NULL);
-    assert(m != NULL);
+    TEST_ASSERT_NOT_NULL(m);
 
-    /* 2. Lock Success */
-    assert(osalMutexLock(m, OSAL_WAIT_FOREVER) == OSAL_SUCCESS);
-    assert(osalMutexUnlock(m) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexLock(m, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexUnlock(m));
 
-    /* 3. Lock Fail (Simulated Error) */
     mock_mutex_lock_ret = EINVAL;
-    assert(osalMutexLock(m, OSAL_WAIT_FOREVER) == OSAL_ERROR);
+    TEST_ASSERT_EQUAL(OSAL_ERROR, osalMutexLock(m, OSAL_WAIT_FOREVER));
     mock_mutex_lock_ret = 0;
 
-    /* 4. Delete */
-    assert(osalMutexDelete(m) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexDelete(m));
 
-    /* 5. Create Fail */
     mock_mutex_init_ret = ENOMEM;
-    assert(osalMutexCreate(NULL) == NULL);
-    
+    TEST_ASSERT_NULL(osalMutexCreate(NULL));
+
     printf("[Mutex] Passed\n");
 }
 
@@ -231,28 +221,21 @@ void test_semaphore(void)
     attr.name = "Sem";
     attr.maxCount = 10;
     attr.initialCount = 0;
-    
-    /* 1. Create Success */
+
     osalSemaphoreHandle_t s = osalSemaphoreCreate(&attr);
-    assert(s != NULL);
+    TEST_ASSERT_NOT_NULL(s);
 
-    /* 2. Take Success */
-    assert(osalSemaphoreTake(s, OSAL_WAIT_FOREVER) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreTake(s, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreGive(s));
 
-    /* 3. Give Success */
-    assert(osalSemaphoreGive(s) == OSAL_SUCCESS);
-
-    /* 4. Take Timeout */
     mock_sem_timedwait_ret = ETIMEDOUT;
-    assert(osalSemaphoreTake(s, 100) == OSAL_ERROR_TIMEOUT);
+    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osalSemaphoreTake(s, 100));
     mock_sem_timedwait_ret = 0;
 
-    /* 5. Delete */
-    assert(osalSemaphoreDelete(s) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreDelete(s));
 
-    /* 6. Create Fail */
     mock_sem_init_ret = -1;
-    assert(osalSemaphoreCreate(&attr) == NULL);
+    TEST_ASSERT_NULL(osalSemaphoreCreate(&attr));
 
     printf("[Semaphore] Passed\n");
 }
@@ -262,36 +245,16 @@ void test_queue(void)
     printf("[Queue] Running tests...\n");
     reset_mocks();
 
-    /* 1. Create Success */
     osalQueueHandle_t q = osalQueueCreate(5, sizeof(int), NULL);
-    assert(q != NULL);
+    TEST_ASSERT_NOT_NULL(q);
 
-    /* 2. Send Success */
     int val = 42;
-    assert(osalQueueSend(q, &val, OSAL_NO_WAIT) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueSend(q, &val, OSAL_NO_WAIT));
 
-    /* 3. Receive Success */
     int rxVal = 0;
-    assert(osalQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER) == OSAL_SUCCESS);
-    /* Note: Since we mock cond_wait to return 0 immediately, and the queue logic 
-       uses a real list (if implemented that way) or just mocks? 
-       Wait, the POSIX implementation uses a linked list protected by mutex/cond.
-       Since we mock mutex/cond to succeed, the logic *should* work if we don't interfere.
-       However, `pthread_cond_wait` releases the mutex and waits. Our mock just returns.
-       This might cause issues if the implementation expects the mutex to be re-acquired.
-       Actually, `pthread_cond_wait` re-acquires mutex before returning.
-       Our mock `pthread_cond_wait` does nothing. 
-       The caller `osalQueueReceive` holds the mutex, calls `cond_wait` (which releases, waits, acquires).
-       If our mock does nothing, the mutex is still held? No, `cond_wait` takes mutex as arg.
-       If we do nothing, the mutex remains locked. The function proceeds.
-       So it behaves as if the condition was signaled immediately.
-       
-       BUT: The queue implementation has a `while (count == 0)` loop.
-       If we send first, count is 1. Receive should succeed immediately.
-    */
-    
-    /* 4. Delete */
-    assert(osalQueueDelete(q) == OSAL_SUCCESS);
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER));
+
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueDelete(q));
 
     printf("[Queue] Passed\n");
 }
@@ -301,26 +264,23 @@ void test_time(void)
     printf("[Time] Running tests...\n");
     reset_mocks();
 
-    /* 1. Get Tick */
-    /* Mock time is 1000s = 1,000,000 ms */
-    assert(osalGetTickMs() == 1000000);
+    TEST_ASSERT_EQUAL(1000000, osalGetTickMs());
 
-    /* 2. Delay */
-    /* Delay 500ms */
     osalDelayMs(500);
-    /* Mock nanosleep advances time. */
-    assert(osalGetTickMs() == 1000500);
+    TEST_ASSERT_EQUAL(1000500, osalGetTickMs());
 
     printf("[Time] Passed\n");
 }
 
 int main(void)
 {
-    test_mutex();
-    test_semaphore();
-    test_queue();
-    test_time();
-    
+    UNITY_BEGIN();
+
+    RUN_TEST(test_mutex);
+    RUN_TEST(test_semaphore);
+    RUN_TEST(test_queue);
+    RUN_TEST(test_time);
+
     printf("All POSIX tests passed!\n");
-    return 0;
+    return UNITY_END();
 }

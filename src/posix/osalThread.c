@@ -19,10 +19,24 @@ typedef struct
     bool isStatic;
 } osalThreadControlBlock_t;
 
+/* Global Key for Thread Local Storage */
+static pthread_key_t g_osal_thread_key;
+static pthread_once_t g_osal_key_once = PTHREAD_ONCE_INIT;
+
+static void init_thread_key(void)
+{
+    pthread_key_create(&g_osal_thread_key, NULL);
+}
+
 /* Internal wrapper to match pthread signature */
 static void *threadWrapper(void *arg)
 {
     osalThreadControlBlock_t *cb = (osalThreadControlBlock_t *)arg;
+
+    /* Store the CB handle in TLS so GetId() works correctly */
+    pthread_once(&g_osal_key_once, init_thread_key);
+    pthread_setspecific(g_osal_thread_key, cb);
+
     if (cb && cb->func)
     {
         cb->func(cb->arg);
@@ -43,6 +57,9 @@ osalThreadHandle_t osalThreadCreate(osalThreadFunc_t func, void *arg, const osal
     {
         return NULL;
     }
+
+    /* Initialize TLS key if not already done */
+    pthread_once(&g_osal_key_once, init_thread_key);
 
     /* Allocate control block */
     if (attr && attr->cbMem)
@@ -79,13 +96,12 @@ osalThreadHandle_t osalThreadCreate(osalThreadFunc_t func, void *arg, const osal
         pthread_attr_setstacksize(&threadAttr, attr->stackSize);
     }
 
-    /* Handle priority (requires root/CAP_SYS_NICE usually, so we just try) */
+    /* Handle priority */
     if (attr && attr->priority > 0)
     {
         pthread_attr_setschedpolicy(&threadAttr, SCHED_FIFO);
         param.sched_priority = attr->priority;
         pthread_attr_setschedparam(&threadAttr, &param);
-        /* We don't check return here as setting priority might fail on non-realtime systems */
     }
 
     ret = pthread_create(&cb->thread, &threadAttr, threadWrapper, cb);
@@ -100,7 +116,7 @@ osalThreadHandle_t osalThreadCreate(osalThreadFunc_t func, void *arg, const osal
         return NULL;
     }
 
-    /* Set name if available (non-standard but common) */
+    /* Set name if available */
     if (attr && attr->name)
     {
         #ifdef __linux__
@@ -117,7 +133,9 @@ osalStatus_t osalThreadDelete(osalThreadHandle_t thread)
 
     if (cb == NULL)
     {
-        return OSAL_ERROR_PARAMETER;
+        /* If NULL, delete self */
+        cb = (osalThreadControlBlock_t *)osalThreadGetId();
+        if (cb == NULL) return OSAL_ERROR_PARAMETER;
     }
 
     pthread_cancel(cb->thread);
@@ -138,18 +156,6 @@ void osalThreadYield(void)
 
 osalThreadHandle_t osalThreadGetId(void)
 {
-    /* This is tricky as we don't have easy access to the CB from just pthread_self() 
-       without a lookup table. For now, we return the pthread_t casted, 
-       BUT this breaks the handle type safety if we expect osalThreadHandle_t to be the CB.
-       However, typically GetId is used for comparison. 
-       
-       If we need the CB, we would need thread-local storage or a global list.
-       For simplicity in this scaffold, we'll return NULL or implement a TLS approach later.
-       Actually, let's just return the pthread_t as a void* for ID comparison purposes,
-       but note that it's not a valid handle for Delete() in this implementation.
-       
-       Better approach: Use the CB as the handle. 
-       To return the CB from GetId, we need to store the CB in TLS.
-    */
-    return (osalThreadHandle_t)pthread_self(); 
+    pthread_once(&g_osal_key_once, init_thread_key);
+    return (osalThreadHandle_t)pthread_getspecific(g_osal_thread_key);
 }
