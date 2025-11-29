@@ -1,4 +1,4 @@
-/* osalTypes.h - one line definition */
+/* osalTypes.h - Common types and definitions */
 
 /* All Rights Reserved */
 
@@ -10,20 +10,43 @@ extern "C"
 {
 #endif
 
-    /* Includes */
+/* Includes */
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
 
+/* Configurations */
 
-    /* Configurations */
+/* Definitions */
+#define OSAL_WAIT_FOREVER 0xFFFFFFFFU
+#define OSAL_NO_WAIT      0x00000000U
 
+/* Types */
 
-    /* Definitions */
+/**
+ * @brief OSAL Status Codes
+ */
+typedef enum
+{
+    OSAL_SUCCESS = 0,
+    OSAL_ERROR,
+    OSAL_ERROR_TIMEOUT,
+    OSAL_ERROR_RESOURCE,
+    OSAL_ERROR_PARAMETER,
+    OSAL_ERROR_NOMEM,
+    OSAL_ERROR_ISR
+} osalStatus_t;
 
+/**
+ * @brief Opaque handles for OS objects
+ */
+typedef void *osalMutexHandle_t;
+typedef void *osalSemaphoreHandle_t;
+typedef void *osalQueueHandle_t;
+typedef void *osalThreadHandle_t;
+typedef void *osalEventFlagsHandle_t;
 
-    /* Types */
-
-
-    /* External Declarations */
-
+/* External Declarations */
 
 #ifdef __cplusplus
 }

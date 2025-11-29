@@ -22,17 +22,62 @@ option(BUILD_EXAMPLES "Build example applications" OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ============================================================================
+# Platform Selection
+# ============================================================================
+set(OSAL_PLATFORM "AUTO" CACHE STRING "Target platform (AUTO, POSIX, FREERTOS)")
+
+if(OSAL_PLATFORM STREQUAL "AUTO")
+    if(UNIX AND NOT APPLE) # Linux
+        set(OSAL_PLATFORM "POSIX")
+    elseif(APPLE) # macOS
+        set(OSAL_PLATFORM "POSIX")
+    elseif(DEFINED ENV{FREERTOS_KERNEL_PATH} OR DEFINED FREERTOS_KERNEL_PATH)
+        set(OSAL_PLATFORM "FREERTOS")
+    else()
+        message(STATUS "OSAL: Defaulting to POSIX")
+        set(OSAL_PLATFORM "POSIX")
+    endif()
+endif()
+
+message(STATUS "OSAL: Selected platform: ${OSAL_PLATFORM}")
+
+# ============================================================================
 # Library Target
 # ============================================================================
 add_library(osal)
 add_library(osal::osal ALIAS osal)
 
-# Core sources
-target_sources(osal
-    PRIVATE
-        src/osal.c
-        src/osalInternal.c
-)
+
+
+# Platform sources
+if(OSAL_PLATFORM STREQUAL "POSIX")
+    target_sources(osal
+        PRIVATE
+            src/posix/osalTime.c
+            src/posix/osalMutex.c
+            src/posix/osalSemaphore.c
+            src/posix/osalMessageQueue.c
+            src/posix/osalThread.c
+            src/posix/osalEventFlags.c
+    )
+    find_package(Threads REQUIRED)
+    target_link_libraries(osal PRIVATE Threads::Threads)
+    target_compile_definitions(osal PRIVATE OSAL_PLATFORM_POSIX _GNU_SOURCE)
+
+elseif(OSAL_PLATFORM STREQUAL "FREERTOS")
+    target_sources(osal
+        PRIVATE
+            src/freertos/osalTime.c
+            src/freertos/osalMutex.c
+            src/freertos/osalSemaphore.c
+            src/freertos/osalMessageQueue.c
+            src/freertos/osalThread.c
+            src/freertos/osalEventFlags.c
+    )
+    # User must provide FreeRTOS include paths and library via other means
+    # or we can try to find it if a standard package exists (rare for embedded)
+    target_compile_definitions(osal PRIVATE OSAL_PLATFORM_FREERTOS)
+endif()
 
 # Include directories
 target_include_directories(osal
