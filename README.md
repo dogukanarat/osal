@@ -1,16 +1,18 @@
 # libscaffold
 
-A scaffold template for creating CMake-based C libraries with proper installation support.
+A minimal scaffold template for creating CMake-based C libraries with proper installation support.
 
 ## Overview
 
-This is a ready-to-use scaffold for creating C libraries with CMake. It includes:
+This is a ready-to-use scaffold for creating C libraries with CMake. It provides a clean starting point with organized file structure and comprehensive build configuration.
 
-- ✅ Proper directory structure (`src/`, `include/`)
+**Features:**
+- ✅ Organized directory structure (`src/`, `include/`)
 - ✅ Comprehensive CMakeLists.txt with install commands
-- ✅ Example source and header files
+- ✅ Minimal template files with clear section organization
 - ✅ CMake package configuration for `find_package()` support
 - ✅ Intelligent rename script to customize the library name
+- ✅ `.gitignore` configured for C/CMake projects
 
 ## Directory Structure
 
@@ -25,8 +27,64 @@ libscaffold/
 ├── cmake/                   # CMake modules
 │   └── libscaffoldConfig.cmake.in  # Package config template
 ├── CMakeLists.txt          # Build configuration
+├── .gitignore              # Git ignore rules
 ├── rename.sh               # Rename script
 └── README.md               # This file
+```
+
+## File Structure
+
+All source and header files follow a consistent organization:
+
+**Header Files** (`.h`):
+```c
+/* filename.h - one line definition */
+
+/* All Rights Reserved */
+
+#ifndef INC_FILENAME_H
+#define INC_FILENAME_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes */
+
+/* Configurations */
+
+/* Definitions */
+
+/* Types */
+
+/* External Declarations */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* INC_FILENAME_H */
+```
+
+**Source Files** (`.c`):
+```c
+/* filename.c - one line definition */
+
+/* All Rights Reserved */
+
+/* Includes */
+
+/* Imports */
+
+/* Definitions */
+
+/* Types */
+
+/* Forward Declarations */
+
+/* Variables */
+
+/* Functions */
 ```
 
 ## Building
@@ -102,35 +160,9 @@ target_link_libraries(myapp PRIVATE libscaffold::libscaffold)
 
 ```c
 #include <libscaffold/libscaffold.h>
-#include <stdio.h>
 
 int main(void) {
-    // Initialize the library
-    if (libscaffoldInit() != LIBSCAFFOLD_SUCCESS) {
-        fprintf(stderr, "Failed to initialize library\n");
-        return 1;
-    }
-    
-    // Get version
-    printf("Library version: %s\n", libscaffoldGetVersion());
-    
-    // Use the library
-    char input[] = "Hello, World!";
-    char output[256];
-    size_t outputSize = sizeof(output);
-    
-    LibScaffoldResult result = libscaffoldProcess(
-        input, strlen(input),
-        output, &outputSize
-    );
-    
-    if (result == LIBSCAFFOLD_SUCCESS) {
-        printf("Processed %zu bytes\n", outputSize);
-    }
-    
-    // Cleanup
-    libscaffoldCleanup();
-    
+    /* Use the library */
     return 0;
 }
 ```
@@ -159,19 +191,18 @@ The script will:
   - `LibScaffold` → `Mylib` (PascalCase)
   - `LIBSCAFFOLD` → `MYLIB` (UPPERCASE)
 - ✅ Rename all files and directories
-- ✅ Update all file contents
+- ✅ Update all file contents (including header guards)
 - ✅ Preserve underscores in names (e.g., `my_lib` stays as `my_lib`)
 
 ### After Renaming
 
 1. Review the changes
-2. Update this README with your library's specific information
-3. Implement your actual library functionality
-4. Add tests and examples as needed
+2. Update the one-line descriptions in each file
+3. Update the license information ("All Rights Reserved")
+4. Implement your actual library functionality
+5. Add tests and examples as needed
 
-## Features
-
-### CMake Installation Support
+## CMake Installation Features
 
 The scaffold includes complete installation support:
 
@@ -181,12 +212,12 @@ The scaffold includes complete installation support:
 - **Version Management**: Automatic version file generation
 - **Component Support**: Separate Runtime and Development components
 
-### Compiler Support
+## Compiler Support
 
-- C99 standard
-- GCC/Clang: Full warnings enabled (`-Wall -Wextra -Wpedantic`)
-- MSVC: Warning level 4 (`/W4`)
-- Symbol visibility control for shared libraries
+- **Standard**: C99
+- **GCC/Clang**: Full warnings enabled (`-Wall -Wextra -Wpedantic`)
+- **MSVC**: Warning level 4 (`/W4`)
+- **Symbol visibility**: Controlled for shared libraries
 
 ## Customization
 
@@ -200,8 +231,8 @@ After renaming, you can customize:
 
 ## License
 
-Customize this section with your own license information.
+Update the license information in all source files and add a LICENSE file as needed.
 
-## Authors
+## Repository
 
-Your name and contributors.
+GitHub: [dogukanarat/libscaffold](https://github.com/dogukanarat/libscaffold)
