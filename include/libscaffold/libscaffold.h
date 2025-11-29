@@ -6,22 +6,23 @@
 #define INC_LIBSCAFFOLD_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Includes */
+    /* Includes */
 
 
-/* Configurations */
+    /* Configurations */
 
 
-/* Definitions */
+    /* Definitions */
 
 
-/* Types */
+    /* Types */
 
 
-/* External Declarations */
+    /* External Declarations */
 
 
 #ifdef __cplusplus
