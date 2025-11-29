@@ -1,0 +1,30 @@
+@PACKAGE_INIT@
+
+# osal CMake configuration file
+
+# Provide information about the package
+set(OSAL_VERSION "@PROJECT_VERSION@")
+set(OSAL_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set(OSAL_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set(OSAL_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+
+# Check if components are requested
+set(_osal_supported_components Runtime Development)
+
+foreach(_comp ${osal_FIND_COMPONENTS})
+    if(NOT _comp IN_LIST _osal_supported_components)
+        set(osal_FOUND False)
+        set(osal_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+    endif()
+endforeach()
+
+# Include the targets file
+include("${CMAKE_CURRENT_LIST_DIR}/osalTargets.cmake")
+
+# Check that the library target exists
+if(NOT TARGET osal::osal)
+    set(osal_FOUND False)
+    set(osal_NOT_FOUND_MESSAGE "Target osal::osal not found")
+endif()
+
+check_required_components(osal)

@@ -1,4 +1,4 @@
-# libscaffold
+# osal
 
 A minimal scaffold template for creating CMake-based C libraries with proper installation support.
 
@@ -21,19 +21,19 @@ This is a ready-to-use scaffold for creating C libraries with CMake. It provides
 ## Directory Structure
 
 ```
-libscaffold/
-├── include/libscaffold/     # Public headers
-│   ├── libscaffold.h        # Main API header
-│   └── libscaffoldTypes.h   # Common types and definitions
+osal/
+├── include/osal/     # Public headers
+│   ├── osal.h        # Main API header
+│   └── osalTypes.h   # Common types and definitions
 ├── src/                     # Implementation
-│   ├── libscaffold.c        # Core implementation
-│   └── libscaffoldInternal.c # Internal utilities
+│   ├── osal.c        # Core implementation
+│   └── osalInternal.c # Internal utilities
 ├── test/                    # Unit tests (Unity framework)
 │   ├── CMakeLists.txt       # Test build configuration
-│   ├── test_libscaffold.c   # Example test file
+│   ├── test_osal.c   # Example test file
 │   └── README.md            # Testing guide
 ├── cmake/                   # CMake modules
-│   └── libscaffoldConfig.cmake.in  # Package config template
+│   └── osalConfig.cmake.in  # Package config template
 ├── .clang-format            # Code formatting rules
 ├── .editorconfig            # Editor configuration
 ├── .gitignore              # Git ignore rules
@@ -120,7 +120,7 @@ The scaffold includes a `.clang-format` configuration file that enforces consist
 **Format Specific Files:**
 ```bash
 clang-format -i src/myfile.c
-clang-format -i include/libscaffold/myheader.h
+clang-format -i include/osal/myheader.h
 ```
 
 **Example Formatted Code:**
@@ -190,11 +190,11 @@ ctest --verbose
 
 ### Writing Tests
 
-See [test/README.md](file:///home/dogukanarat/workspace/libscaffold/test/README.md) for a comprehensive guide on writing tests with Unity.
+See [test/README.md](file:///home/dogukanarat/workspace/osal/test/README.md) for a comprehensive guide on writing tests with Unity.
 
 **Quick Example:**
 ```c
-#include "libscaffold/libscaffold.h"
+#include "osal/osal.h"
 #include "unity.h"
 
 void test_myFunction_should_returnSuccess(void)
@@ -225,8 +225,8 @@ sudo make install
 
 This will install:
 - Library files to `/usr/local/lib/`
-- Header files to `/usr/local/include/libscaffold/`
-- CMake config files to `/usr/local/lib/cmake/libscaffold/`
+- Header files to `/usr/local/include/osal/`
+- CMake config files to `/usr/local/lib/cmake/osal/`
 
 ### Custom Installation Prefix
 
@@ -247,19 +247,19 @@ cmake_minimum_required(VERSION 3.14)
 project(MyProject)
 
 # Find the installed library
-find_package(libscaffold REQUIRED)
+find_package(osal REQUIRED)
 
 # Create your executable
 add_executable(myapp main.c)
 
 # Link against the library
-target_link_libraries(myapp PRIVATE libscaffold::libscaffold)
+target_link_libraries(myapp PRIVATE osal::osal)
 ```
 
 ### In Your C Code
 
 ```c
-#include <libscaffold/libscaffold.h>
+#include <osal/osal.h>
 
 int main(void) {
     /* Use the library */
@@ -287,9 +287,9 @@ This will show you all the changes that would be made without actually modifying
 
 The script will:
 - ✅ Preserve case conventions:
-  - `libscaffold` → `mylib` (lowercase)
-  - `LibScaffold` → `Mylib` (PascalCase)
-  - `LIBSCAFFOLD` → `MYLIB` (UPPERCASE)
+  - `osal` → `mylib` (lowercase)
+  - `Osal` → `Mylib` (PascalCase)
+  - `OSAL` → `MYLIB` (UPPERCASE)
 - ✅ Rename all files and directories
 - ✅ Update all file contents (including header guards)
 - ✅ Preserve underscores in names (e.g., `my_lib` stays as `my_lib`)
@@ -335,4 +335,4 @@ Update the license information in all source files and add a LICENSE file as nee
 
 ## Repository
 
-GitHub: [dogukanarat/libscaffold](https://github.com/dogukanarat/libscaffold)
+GitHub: [dogukanarat/osal](https://github.com/dogukanarat/osal)

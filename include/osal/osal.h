@@ -1,9 +1,9 @@
-/* libscaffold.h - one line definition */
+/* osal.h - one line definition */
 
 /* All Rights Reserved */
 
-#ifndef INC_LIBSCAFFOLD_H
-#define INC_LIBSCAFFOLD_H
+#ifndef INC_OSAL_H
+#define INC_OSAL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -29,4 +29,4 @@ extern "C"
 }
 #endif
 
-#endif /* INC_LIBSCAFFOLD_H */
+#endif /* INC_OSAL_H */

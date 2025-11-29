@@ -1,9 +1,10 @@
-/* libscaffoldInternal.c - one line definition */
+/* osal.c - one line definition */
 
 /* All Rights Reserved */
 
 /* Includes */
 
+#include "osal/osal.h"
 
 /* Imports */
 

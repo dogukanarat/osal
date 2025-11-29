@@ -1,9 +1,9 @@
-/* libscaffoldTypes.h - one line definition */
+/* osalTypes.h - one line definition */
 
 /* All Rights Reserved */
 
-#ifndef INC_LIBSCAFFOLD_TYPES_H
-#define INC_LIBSCAFFOLD_TYPES_H
+#ifndef INC_OSAL_TYPES_H
+#define INC_OSAL_TYPES_H
 
 #ifdef __cplusplus
 extern "C"
@@ -29,4 +29,4 @@ extern "C"
 }
 #endif
 
-#endif /* INC_LIBSCAFFOLD_TYPES_H */
+#endif /* INC_OSAL_TYPES_H */
