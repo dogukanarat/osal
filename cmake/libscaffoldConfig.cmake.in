@@ -1,0 +1,30 @@
+@PACKAGE_INIT@
+
+# libscaffold CMake configuration file
+
+# Provide information about the package
+set(LIBSCAFFOLD_VERSION "@PROJECT_VERSION@")
+set(LIBSCAFFOLD_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set(LIBSCAFFOLD_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set(LIBSCAFFOLD_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+
+# Check if components are requested
+set(_libscaffold_supported_components Runtime Development)
+
+foreach(_comp ${libscaffold_FIND_COMPONENTS})
+    if(NOT _comp IN_LIST _libscaffold_supported_components)
+        set(libscaffold_FOUND False)
+        set(libscaffold_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+    endif()
+endforeach()
+
+# Include the targets file
+include("${CMAKE_CURRENT_LIST_DIR}/libscaffoldTargets.cmake")
+
+# Check that the library target exists
+if(NOT TARGET libscaffold::libscaffold)
+    set(libscaffold_FOUND False)
+    set(libscaffold_NOT_FOUND_MESSAGE "Target libscaffold::libscaffold not found")
+endif()
+
+check_required_components(libscaffold)
