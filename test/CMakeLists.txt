@@ -7,26 +7,32 @@ cmake_minimum_required(VERSION 3.14)
 # Fetch Unity Test Framework
 # ============================================================================
 include(FetchContent)
-
 FetchContent_Declare(
     unity
     GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-    GIT_TAG v2.6.0
+    GIT_TAG        v2.5.2
 )
-
 FetchContent_MakeAvailable(unity)
 
 # ============================================================================
 # Test Executable
 # ============================================================================
 if(OSAL_PLATFORM STREQUAL "POSIX")
+    set(TEST_SOURCE
+        ../src/posix/osalTime.c
+        ../src/posix/osalMutex.c
+        ../src/posix/osalSemaphore.c
+        ../src/posix/osalMessageQueue.c
+        ../src/posix/osalThread.c
+    )
+
     add_executable(test_posix
         test_posix.c
+        ${TEST_SOURCE}
     )
 
     target_link_libraries(test_posix
         PRIVATE
-            osal::osal
             unity
     )
     target_include_directories(test_posix

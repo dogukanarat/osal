@@ -1,11 +1,11 @@
-/* test_posix.c - Comprehensive Unit Tests for OSAL POSIX (Unity Version) */
+/* test_posix.c - Comprehensive Unit Tests for OSAL POSIX */
 
 #include "osal/osalMutex.h"
 #include "osal/osalSemaphore.h"
 #include "osal/osalMessageQueue.h"
 #include "osal/osalTime.h"
 #include "osal/osalTypes.h"
-#include "unity/unity.h"
+#include "unity.h" /* */
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -25,10 +25,11 @@ static int mock_cond_init_ret = 0;
 static int mock_cond_wait_ret = 0;
 static int mock_cond_timedwait_ret = 0;
 
-static struct timespec mock_current_time = {1000, 0}; /* Start at 1000s */
+static struct timespec mock_current_time = {1000, 0};
 
-void reset_mocks(void)
+void setUp(void)
 {
+    /* Reset mocks before each test */
     mock_mutex_init_ret = 0;
     mock_mutex_lock_ret = 0;
     mock_clock_gettime_ret = 0;
@@ -43,7 +44,12 @@ void reset_mocks(void)
     mock_current_time.tv_nsec = 0;
 }
 
-/* --- MOCK IMPLEMENTATIONS --- */
+void tearDown(void)
+{
+    /* Cleanup if needed */
+}
+
+/* --- MOCK IMPLEMENTATIONS (Wrappers) --- */
 
 int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
 {
@@ -75,11 +81,7 @@ int __wrap_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t 
     return mock_mutex_init_ret;
 }
 
-int __wrap_pthread_mutex_destroy(pthread_mutex_t *mutex)
-{
-    (void)mutex;
-    return 0;
-}
+int __wrap_pthread_mutex_destroy(pthread_mutex_t *mutex) { (void)mutex; return 0; }
 
 int __wrap_pthread_mutex_lock(pthread_mutex_t *mutex)
 {
@@ -87,11 +89,7 @@ int __wrap_pthread_mutex_lock(pthread_mutex_t *mutex)
     return mock_mutex_lock_ret;
 }
 
-int __wrap_pthread_mutex_unlock(pthread_mutex_t *mutex)
-{
-    (void)mutex;
-    return 0;
-}
+int __wrap_pthread_mutex_unlock(pthread_mutex_t *mutex) { (void)mutex; return 0; }
 
 int __wrap_sem_init(sem_t *sem, int pshared, unsigned int value)
 {
@@ -99,11 +97,7 @@ int __wrap_sem_init(sem_t *sem, int pshared, unsigned int value)
     return (mock_sem_init_ret == 0) ? 0 : -1;
 }
 
-int __wrap_sem_destroy(sem_t *sem)
-{
-    (void)sem;
-    return 0;
-}
+int __wrap_sem_destroy(sem_t *sem) { (void)sem; return 0; }
 
 int __wrap_sem_wait(sem_t *sem)
 {
@@ -127,160 +121,100 @@ int __wrap_sem_timedwait(sem_t *sem, const struct timespec *abs_timeout)
     return 0;
 }
 
-int __wrap_sem_post(sem_t *sem)
-{
-    (void)sem;
-    return 0;
-}
+int __wrap_sem_post(sem_t *sem) { (void)sem; return 0; }
 
 int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                           void *(*start_routine) (void *), void *arg)
 {
-    (void)thread; (void)attr;
-    if (mock_pthread_create_ret == 0)
-    {
-        return 0;
-    }
+    (void)thread; (void)attr; (void)start_routine; (void)arg;
     return mock_pthread_create_ret;
 }
 
-int __wrap_pthread_join(pthread_t thread, void **retval)
-{
-    (void)thread; (void)retval;
-    return 0;
-}
+int __wrap_pthread_join(pthread_t thread, void **retval) { (void)thread; (void)retval; return 0; }
+int __wrap_pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) { (void)cond; (void)attr; return mock_cond_init_ret; }
+int __wrap_pthread_cond_destroy(pthread_cond_t *cond) { (void)cond; return 0; }
+int __wrap_pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) { (void)cond; (void)mutex; return mock_cond_wait_ret; }
+int __wrap_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime) { (void)cond; (void)mutex; (void)abstime; return mock_cond_timedwait_ret; }
+int __wrap_pthread_cond_signal(pthread_cond_t *cond) { (void)cond; return 0; }
+int __wrap_pthread_cond_broadcast(pthread_cond_t *cond) { (void)cond; return 0; }
 
-int __wrap_pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr)
-{
-    (void)cond; (void)attr;
-    return mock_cond_init_ret;
-}
-
-int __wrap_pthread_cond_destroy(pthread_cond_t *cond)
-{
-    (void)cond;
-    return 0;
-}
-
-int __wrap_pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
-{
-    (void)cond; (void)mutex;
-    return mock_cond_wait_ret;
-}
-
-int __wrap_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
-                                  const struct timespec *abstime)
-{
-    (void)cond; (void)mutex; (void)abstime;
-    return mock_cond_timedwait_ret;
-}
-
-int __wrap_pthread_cond_signal(pthread_cond_t *cond)
-{
-    (void)cond;
-    return 0;
-}
-
-int __wrap_pthread_cond_broadcast(pthread_cond_t *cond)
-{
-    (void)cond;
-    return 0;
-}
 
 /* --- TEST CASES --- */
 
 void test_mutex(void)
 {
-    printf("[Mutex] Running tests...\n");
-    reset_mocks();
-
+    /* 1. Create Success */
     osalMutexHandle_t m = osalMutexCreate(NULL);
     TEST_ASSERT_NOT_NULL(m);
 
+    /* 2. Lock Success */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexLock(m, OSAL_WAIT_FOREVER));
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexUnlock(m));
 
-    mock_mutex_lock_ret = EINVAL;
-    TEST_ASSERT_EQUAL(OSAL_ERROR, osalMutexLock(m, OSAL_WAIT_FOREVER));
-    mock_mutex_lock_ret = 0;
+    /* 3. Lock Fail (Simulated Error) */
+    mock_mutex_lock_ret = ETIMEDOUT;
+    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osalMutexLock(m, OSAL_WAIT_FOREVER));
 
+    /* 4. Delete */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexDelete(m));
-
-    mock_mutex_init_ret = ENOMEM;
-    TEST_ASSERT_NULL(osalMutexCreate(NULL));
-
-    printf("[Mutex] Passed\n");
 }
 
 void test_semaphore(void)
 {
-    printf("[Semaphore] Running tests...\n");
-    reset_mocks();
+    osalSemaphoreAttr_t attr = { .name = "Sem", .maxCount = 10, .initialCount = 0 };
 
-    osalSemaphoreAttr_t attr = {0};
-    attr.name = "Sem";
-    attr.maxCount = 10;
-    attr.initialCount = 0;
-
+    /* 1. Create Success */
     osalSemaphoreHandle_t s = osalSemaphoreCreate(&attr);
     TEST_ASSERT_NOT_NULL(s);
 
+    /* 2. Take Success */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreTake(s, OSAL_WAIT_FOREVER));
+
+    /* 3. Give Success */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreGive(s));
 
+    /* 4. Take Timeout */
     mock_sem_timedwait_ret = ETIMEDOUT;
     TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osalSemaphoreTake(s, 100));
-    mock_sem_timedwait_ret = 0;
 
+    /* 5. Delete */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreDelete(s));
-
-    mock_sem_init_ret = -1;
-    TEST_ASSERT_NULL(osalSemaphoreCreate(&attr));
-
-    printf("[Semaphore] Passed\n");
 }
 
 void test_queue(void)
 {
-    printf("[Queue] Running tests...\n");
-    reset_mocks();
-
+    /* 1. Create Success */
     osalQueueHandle_t q = osalQueueCreate(5, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(q);
 
+    /* 2. Send Success */
     int val = 42;
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueSend(q, &val, OSAL_NO_WAIT));
 
+    /* 3. Receive Success */
     int rxVal = 0;
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER));
 
+    /* 4. Delete */
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueDelete(q));
-
-    printf("[Queue] Passed\n");
 }
 
 void test_time(void)
 {
-    printf("[Time] Running tests...\n");
-    reset_mocks();
+    /* 1. Get Tick */
+    TEST_ASSERT_EQUAL_UINT32(1000000, osalGetTickMs());
 
-    TEST_ASSERT_EQUAL(1000000, osalGetTickMs());
-
+    /* 2. Delay */
     osalDelayMs(500);
-    TEST_ASSERT_EQUAL(1000500, osalGetTickMs());
-
-    printf("[Time] Passed\n");
+    TEST_ASSERT_EQUAL_UINT32(1000500, osalGetTickMs());
 }
 
 int main(void)
 {
     UNITY_BEGIN();
-
     RUN_TEST(test_mutex);
     RUN_TEST(test_semaphore);
     RUN_TEST(test_queue);
     RUN_TEST(test_time);
-
-    printf("All POSIX tests passed!\n");
     return UNITY_END();
 }

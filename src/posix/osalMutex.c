@@ -46,7 +46,7 @@ osalMutexHandle_t osalMutexCreate(const osalMutexAttr_t *attr)
 
     /* Initialize mutex attributes */
     pthread_mutexattr_init(&mutexAttr);
-    
+
     /* Handle attributes */
     if (attr && (attr->attrBits & OSAL_MUTEX_RECURSIVE))
     {
@@ -54,8 +54,8 @@ osalMutexHandle_t osalMutexCreate(const osalMutexAttr_t *attr)
     }
     else
     {
-        /* Default to recursive for general robustness if not specified, 
-           or normal if strictly following bits. Let's follow bits but 
+        /* Default to recursive for general robustness if not specified,
+           or normal if strictly following bits. Let's follow bits but
            note that many OSALs default to recursive. */
         pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_NORMAL);
     }
