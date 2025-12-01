@@ -37,15 +37,6 @@ typedef enum
     OSAL_ERROR_ISR
 } osalStatus_t;
 
-/**
- * @brief Opaque handles for OS objects
- */
-typedef void *osalMutexHandle_t;
-typedef void *osalSemaphoreHandle_t;
-typedef void *osalQueueHandle_t;
-typedef void *osalThreadHandle_t;
-typedef void *osalEventFlagsHandle_t;
-
 /* External Declarations */
 
 #ifdef __cplusplus

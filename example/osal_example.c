@@ -36,7 +36,7 @@ void thread1Func(void *arg)
 
         /* Queue test */
         printf("Thread 1: Sending %d to queue\n", count);
-        osalQueueSend(Queue, &count, OSAL_WAIT_FOREVER);
+        osalMessageQueueSend(Queue, &count, OSAL_WAIT_FOREVER);
 
         /* Semaphore test */
         printf("Thread 1: Giving semaphore\n");
@@ -72,7 +72,7 @@ void thread2Func(void *arg)
         printf("Thread 2: Got semaphore\n");
 
         /* Queue test */
-        if (osalQueueReceive(Queue, &msg, 1000) == OSAL_SUCCESS)
+        if (osalMessageQueueReceive(Queue, &msg, 1000) == OSAL_SUCCESS)
         {
             printf("Thread 2: Received %d from queue\n", msg);
         }
@@ -116,8 +116,8 @@ int main(void)
         printf("Failed to create semaphore\n");
     }
 
-    osalQueueAttr_t queueAttr = {.name = "TestQueue"};
-    Queue = osalQueueCreate(10, sizeof(uint32_t), &queueAttr);
+    osalMessageQueueAttr_t queueAttr = {.name = "TestQueue"};
+    Queue = osalMessageQueueCreate(10, sizeof(uint32_t), &queueAttr);
     if (!Queue)
     {
         printf("Failed to create queue\n");
@@ -158,7 +158,7 @@ int main(void)
     printf("Testing ISR APIs (Abstracted)...\n");
     osalSemaphoreGive(Sem);
     uint32_t val = 123;
-    osalQueueSend(Queue, &val, OSAL_NO_WAIT);
+    osalMessageQueueSend(Queue, &val, OSAL_NO_WAIT);
     osalEventFlagsSet(Flags, 0x02);
     printf("ISR APIs called successfully\n");
 
@@ -167,7 +167,7 @@ int main(void)
     osalThreadDelete(t2);
     osalMutexDelete(Mutex);
     osalSemaphoreDelete(Sem);
-    osalQueueDelete(Queue);
+    osalMessageQueueDelete(Queue);
     osalEventFlagsDelete(Flags);
 
     printf("Example finished\n");

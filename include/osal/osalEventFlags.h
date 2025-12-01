@@ -31,6 +31,8 @@ typedef struct
     uint32_t cbSize;  ///< Size of control block memory
 } osalEventFlagsAttr_t;
 
+typedef void *osalEventFlagsHandle_t;
+
 /* Functions */
 
 /**

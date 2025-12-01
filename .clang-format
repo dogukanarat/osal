@@ -14,6 +14,8 @@ UseTab: Never
 ContinuationIndentWidth: 4
 IndentCaseLabels: false
 IndentPPDirectives: None
+# THIS IS THE FIX: Prevents indentation inside extern "C" blocks
+IndentExternBlock: NoIndent
 
 # Braces - All on new lines (Allman style)
 BreakBeforeBraces: Allman
