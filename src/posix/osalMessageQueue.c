@@ -28,7 +28,7 @@ typedef struct
 
 /* Functions */
 
-osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQueueAttr_t *attr)
+osalQueueHandle_t osalMessageQueueCreate(uint32_t depth, uint32_t itemSize, const osalMessageQueueAttr_t *attr)
 {
     osalQueueControlBlock_t *cb;
     uint8_t *buffer;
@@ -95,7 +95,7 @@ osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQ
     return (osalQueueHandle_t)cb;
 }
 
-osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
+osalStatus_t osalMessageQueueDelete(osalQueueHandle_t queue)
 {
     osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
 
@@ -121,7 +121,7 @@ osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
     return OSAL_SUCCESS;
 }
 
-osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs)
 {
     osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
     struct timespec ts;
@@ -174,7 +174,7 @@ osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t t
     return OSAL_SUCCESS;
 }
 
-osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs)
 {
     osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
     struct timespec ts;
@@ -227,7 +227,7 @@ osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t time
     return OSAL_SUCCESS;
 }
 
-uint32_t osalQueueGetCount(osalQueueHandle_t queue)
+uint32_t osalMessageQueueGetCount(osalQueueHandle_t queue)
 {
     osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
     uint32_t count;
@@ -244,7 +244,7 @@ uint32_t osalQueueGetCount(osalQueueHandle_t queue)
     return count;
 }
 
-osalStatus_t osalQueueReset(osalQueueHandle_t queue)
+osalStatus_t osalMessageQueueReset(osalQueueHandle_t queue)
 {
     osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
 

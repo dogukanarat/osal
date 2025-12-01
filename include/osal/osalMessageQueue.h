@@ -28,7 +28,7 @@ typedef struct
     uint32_t cbSize;  ///< Size of control block memory
     void *mqMem;      ///< Memory for message buffer (optional)
     uint32_t mqSize;  ///< Size of message buffer memory
-} osalQueueAttr_t;
+} osalMessageQueueAttr_t;
 
 /* Functions */
 
@@ -39,14 +39,14 @@ typedef struct
  * @param attr Queue attributes (optional).
  * @return Handle to the created queue, or NULL on failure.
  */
-osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQueueAttr_t *attr);
+osalQueueHandle_t osalMessageQueueCreate(uint32_t depth, uint32_t itemSize, const osalMessageQueueAttr_t *attr);
 
 /**
  * @brief Delete a message queue.
  * @param queue Handle to the queue.
  * @return OSAL_SUCCESS on success.
  */
-osalStatus_t osalQueueDelete(osalQueueHandle_t queue);
+osalStatus_t osalMessageQueueDelete(osalQueueHandle_t queue);
 
 /**
  * @brief Send an item to a queue.
@@ -55,7 +55,7 @@ osalStatus_t osalQueueDelete(osalQueueHandle_t queue);
  * @param timeoutMs Timeout in milliseconds.
  * @return OSAL_SUCCESS on success, OSAL_ERROR_TIMEOUT (or FULL) on timeout.
  */
-osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs);
+osalStatus_t osalMessageQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs);
 
 /**
  * @brief Receive an item from a queue.
@@ -64,21 +64,21 @@ osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t t
  * @param timeoutMs Timeout in milliseconds.
  * @return OSAL_SUCCESS on success, OSAL_ERROR_TIMEOUT (or EMPTY) on timeout.
  */
-osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs);
+osalStatus_t osalMessageQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs);
 
 /**
  * @brief Get number of items in the queue.
  * @param queue Handle to the queue.
  * @return Number of items.
  */
-uint32_t osalQueueGetCount(osalQueueHandle_t queue);
+uint32_t osalMessageQueueGetCount(osalQueueHandle_t queue);
 
 /**
  * @brief Reset the queue (clear all messages).
  * @param queue Handle to the queue.
  * @return OSAL_SUCCESS on success.
  */
-osalStatus_t osalQueueReset(osalQueueHandle_t queue);
+osalStatus_t osalMessageQueueReset(osalQueueHandle_t queue);
 
 #ifdef __cplusplus
 }
