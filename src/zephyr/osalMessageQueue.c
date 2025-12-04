@@ -15,13 +15,13 @@ typedef struct
     void *buffer;          /* Pointer to the buffer memory */
     bool isStaticCb;       /* Flag: Was the CB provided by user? */
     bool isStaticBuf;      /* Flag: Was the buffer provided by user? */
-} osalQueueControlBlock_t;
+} osalMessageQueueControlBlock_t;
 
 /* Functions */
 
-osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQueueAttr_t *attr)
+osalMessageQueueHandle_t osalMessageQueueCreate(uint32_t depth, uint32_t itemSize, const osalMessageQueueAttr_t *attr)
 {
-    osalQueueControlBlock_t *cb;
+    osalMessageQueueControlBlock_t *cb;
     void *buffer;
 
     if (depth == 0 || itemSize == 0)
@@ -35,17 +35,17 @@ osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQ
     if (attr && attr->cbMem)
     {
         /* Static CB */
-        if (attr->cbSize < sizeof(osalQueueControlBlock_t))
+        if (attr->cbSize < sizeof(osalMessageQueueControlBlock_t))
         {
             return NULL;
         }
-        cb = (osalQueueControlBlock_t *)attr->cbMem;
+        cb = (osalMessageQueueControlBlock_t *)attr->cbMem;
         cb->isStaticCb = true;
     }
     else
     {
         /* Dynamic CB */
-        cb = (osalQueueControlBlock_t *)k_malloc(sizeof(osalQueueControlBlock_t));
+        cb = (osalMessageQueueControlBlock_t *)k_malloc(sizeof(osalMessageQueueControlBlock_t));
         if (cb == NULL)
         {
             return NULL;
@@ -92,12 +92,12 @@ osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQ
 
     k_msgq_init(&cb->msgq, cb->buffer, itemSize, depth);
 
-    return (osalQueueHandle_t)cb;
+    return (osalMessageQueueHandle_t)cb;
 }
 
-osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
+osalStatus_t osalMessageQueueDelete(osalMessageQueueHandle_t queue)
 {
-    osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
+    osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 
     if (cb == NULL)
     {
@@ -122,9 +122,9 @@ osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
     return OSAL_SUCCESS;
 }
 
-osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueSend(osalMessageQueueHandle_t queue, const void *item, uint32_t timeoutMs)
 {
-    osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
+    osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
     k_timeout_t timeout;
     int ret;
 
@@ -164,9 +164,9 @@ osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t t
     }
 }
 
-osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueReceive(osalMessageQueueHandle_t queue, void *item, uint32_t timeoutMs)
 {
-    osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
+    osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
     k_timeout_t timeout;
     int ret;
 
@@ -206,9 +206,9 @@ osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t time
     }
 }
 
-uint32_t osalQueueGetCount(osalQueueHandle_t queue)
+uint32_t osalMessageQueueGetCount(osalMessageQueueHandle_t queue)
 {
-    osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
+    osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 
     if (cb == NULL)
     {
@@ -218,9 +218,9 @@ uint32_t osalQueueGetCount(osalQueueHandle_t queue)
     return k_msgq_num_used_get(&cb->msgq);
 }
 
-osalStatus_t osalQueueReset(osalQueueHandle_t queue)
+osalStatus_t osalMessageQueueReset(osalMessageQueueHandle_t queue)
 {
-    osalQueueControlBlock_t *cb = (osalQueueControlBlock_t *)queue;
+    osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 
     if (cb == NULL)
     {

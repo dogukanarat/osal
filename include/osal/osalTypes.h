@@ -42,7 +42,7 @@ typedef enum
  */
 typedef void *osalMutexHandle_t;
 typedef void *osalSemaphoreHandle_t;
-typedef void *osalQueueHandle_t;
+typedef void *osalMessageQueueHandle_t;
 typedef void *osalThreadHandle_t;
 typedef void *osalEventFlagsHandle_t;
 
