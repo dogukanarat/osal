@@ -184,7 +184,7 @@ void test_semaphore(void)
 void test_queue(void)
 {
     /* 1. Create Success */
-    osalQueueHandle_t q = osalMessageQueueCreate(5, sizeof(int), NULL);
+    osalMessageQueueHandle_t q = osalMessageQueueCreate(5, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(q);
 
     /* 2. Send Success */

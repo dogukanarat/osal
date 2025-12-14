@@ -12,7 +12,7 @@
 /* Objects */
 osalMutexHandle_t Mutex;
 osalSemaphoreHandle_t Sem;
-osalQueueHandle_t Queue;
+osalMessageQueueHandle_t Queue;
 osalEventFlagsHandle_t Flags;
 
 /* Thread 1: Producer */
