@@ -29,6 +29,8 @@ typedef struct
     uint32_t cbSize;       ///< Size of control block memory
 } osalSemaphoreAttr_t;
 
+typedef void *osalSemaphoreHandle_t;
+
 /* Functions */
 
 /**

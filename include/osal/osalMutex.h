@@ -32,7 +32,7 @@ typedef struct
     uint32_t cbSize;    ///< Size of control block memory
 } osalMutexAttr_t;
 
-#define OSAL_MUTEX_RECURSIVE 0x00000001U
+typedef void *osalMutexHandle_t;
 
 /* Functions */
 

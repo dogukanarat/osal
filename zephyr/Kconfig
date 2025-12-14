@@ -1,0 +1,5 @@
+config OSAL
+    bool "OS Abstraction Layer"
+    default y
+    help
+      Enable the OSAL library for Zephyr.

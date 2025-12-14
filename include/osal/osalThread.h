@@ -40,6 +40,8 @@ typedef struct
     uint32_t cbSize;    ///< Size of control block memory
 } osalThreadAttr_t;
 
+typedef void *osalThreadHandle_t;
+
 /* Functions */ // Renamed from 'External Declarations'
 
 /**

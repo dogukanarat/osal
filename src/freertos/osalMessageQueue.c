@@ -12,7 +12,7 @@
 
 /* Functions */
 
-osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQueueAttr_t *attr)
+osalQueueHandle_t osalMessageQueueCreate(uint32_t depth, uint32_t itemSize, const osalMessageQueueAttr_t *attr)
 {
     QueueHandle_t handle = NULL;
 
@@ -35,7 +35,7 @@ osalQueueHandle_t osalQueueCreate(uint32_t depth, uint32_t itemSize, const osalQ
     return (osalQueueHandle_t)handle;
 }
 
-osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
+osalStatus_t osalMessageQueueDelete(osalQueueHandle_t queue)
 {
     if (queue == NULL)
     {
@@ -46,7 +46,7 @@ osalStatus_t osalQueueDelete(osalQueueHandle_t queue)
     return OSAL_SUCCESS;
 }
 
-osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueSend(osalQueueHandle_t queue, const void *item, uint32_t timeoutMs)
 {
     TickType_t ticks;
 
@@ -94,7 +94,7 @@ osalStatus_t osalQueueSend(osalQueueHandle_t queue, const void *item, uint32_t t
     }
 }
 
-osalStatus_t osalQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs)
+osalStatus_t osalMessageQueueReceive(osalQueueHandle_t queue, void *item, uint32_t timeoutMs)
 {
     TickType_t ticks;
 

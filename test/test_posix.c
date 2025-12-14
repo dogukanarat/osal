@@ -184,19 +184,19 @@ void test_semaphore(void)
 void test_queue(void)
 {
     /* 1. Create Success */
-    osalQueueHandle_t q = osalQueueCreate(5, sizeof(int), NULL);
+    osalQueueHandle_t q = osalMessageQueueCreate(5, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(q);
 
     /* 2. Send Success */
     int val = 42;
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueSend(q, &val, OSAL_NO_WAIT));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueSend(q, &val, OSAL_NO_WAIT));
 
     /* 3. Receive Success */
     int rxVal = 0;
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER));
 
     /* 4. Delete */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalQueueDelete(q));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueDelete(q));
 }
 
 void test_time(void)

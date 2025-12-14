@@ -10,19 +10,26 @@ extern "C"
 {
 #endif
 
-    /* Includes */
+/* Includes */
+
+#include "osal/osalTypes.h"
+#include "osal/osalEventFlags.h"
+#include "osal/osalMutex.h"
+#include "osal/osalSemaphore.h"
+#include "osal/osalThread.h"
+#include "osal/osalTime.h"
+#include "osal/osalMessageQueue.h"
+
+/* Configurations */
 
 
-    /* Configurations */
+/* Definitions */
 
 
-    /* Definitions */
+/* Types */
 
 
-    /* Types */
-
-
-    /* External Declarations */
+/* External Declarations */
 
 
 #ifdef __cplusplus
