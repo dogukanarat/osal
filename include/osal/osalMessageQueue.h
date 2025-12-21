@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 /* Includes */
+
 #include "osalTypes.h"
 
 /* Configurations */

@@ -9,6 +9,7 @@ zephyr_library_sources(
     ../src/zephyr/osalMessageQueue.c
     ../src/zephyr/osalEventFlags.c
     ../src/zephyr/osalThread.c
+    ../src/zephyr/osalMemory.c
 )
 
 # Add include directories (publicly accessible to other modules)
