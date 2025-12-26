@@ -6,13 +6,7 @@ cmake_minimum_required(VERSION 3.14)
 # ============================================================================
 # Fetch Unity Test Framework
 # ============================================================================
-include(FetchContent)
-FetchContent_Declare(
-    unity
-    GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-    GIT_TAG        v2.5.2
-)
-FetchContent_MakeAvailable(unity)
+find_package(unity REQUIRED)
 
 # ============================================================================
 # Test Executable

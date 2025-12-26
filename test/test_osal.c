@@ -4,7 +4,7 @@
 
 /* Includes */
 #include "osal/osal.h"
-#include "unity.h"
+#include "unity/unity.h"
 #include <string.h>
 #include <stdio.h>
 
