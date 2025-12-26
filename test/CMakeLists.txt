@@ -17,52 +17,25 @@ FetchContent_MakeAvailable(unity)
 # ============================================================================
 # Test Executable
 # ============================================================================
-if(OSAL_PLATFORM STREQUAL "POSIX")
-    set(TEST_SOURCE
-        ../src/posix/osalTime.c
-        ../src/posix/osalMutex.c
-        ../src/posix/osalSemaphore.c
-        ../src/posix/osalMessageQueue.c
-        ../src/posix/osalThread.c
+if(OSAL_PLATFORM STREQUAL "POSIX" OR OSAL_PLATFORM STREQUAL "MACOS")
+    # Use integration tests (no mocking, works on all platforms)
+    add_executable(test_osal
+        test_osal.c
     )
 
-    add_executable(test_posix
-        test_posix.c
-        ${TEST_SOURCE}
-    )
-
-    target_link_libraries(test_posix
+    find_package(Threads REQUIRED)
+    target_link_libraries(test_osal
         PRIVATE
+            osal::osal
             unity
+            Threads::Threads
     )
-    target_include_directories(test_posix
+    target_include_directories(test_osal
         PRIVATE
             ../include
     )
 
-    target_link_options(test_posix PRIVATE
-        -Wl,--wrap=pthread_mutex_lock
-        -Wl,--wrap=pthread_mutex_unlock
-        -Wl,--wrap=pthread_mutex_init
-        -Wl,--wrap=pthread_mutex_destroy
-        -Wl,--wrap=clock_gettime
-        -Wl,--wrap=nanosleep
-        -Wl,--wrap=sem_init
-        -Wl,--wrap=sem_wait
-        -Wl,--wrap=sem_timedwait
-        -Wl,--wrap=sem_post
-        -Wl,--wrap=sem_destroy
-        -Wl,--wrap=pthread_create
-        -Wl,--wrap=pthread_join
-        -Wl,--wrap=pthread_cond_init
-        -Wl,--wrap=pthread_cond_wait
-        -Wl,--wrap=pthread_cond_timedwait
-        -Wl,--wrap=pthread_cond_signal
-        -Wl,--wrap=pthread_cond_broadcast
-        -Wl,--wrap=pthread_cond_destroy
-    )
-
-    add_test(NAME OSAL_POSIX_Tests COMMAND test_posix)
+    add_test(NAME OSAL_Integration_Tests COMMAND test_osal)
 
 # ============================================================================
 # Test Executable

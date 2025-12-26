@@ -24,13 +24,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ============================================================================
 # Platform Selection
 # ============================================================================
-set(OSAL_PLATFORM "AUTO" CACHE STRING "Target platform (AUTO, POSIX, FREERTOS)")
+set(OSAL_PLATFORM "AUTO" CACHE STRING "Target platform (AUTO, POSIX, MACOS, FREERTOS)")
 
 if(OSAL_PLATFORM STREQUAL "AUTO")
     if(UNIX AND NOT APPLE) # Linux
         set(OSAL_PLATFORM "POSIX")
     elseif(APPLE) # macOS
-        set(OSAL_PLATFORM "POSIX")
+        set(OSAL_PLATFORM "MACOS")
     elseif(DEFINED ENV{FREERTOS_KERNEL_PATH} OR DEFINED FREERTOS_KERNEL_PATH)
         set(OSAL_PLATFORM "FREERTOS")
     else()
@@ -53,26 +53,43 @@ add_library(osal::osal ALIAS osal)
 if(OSAL_PLATFORM STREQUAL "POSIX")
     target_sources(osal
         PRIVATE
-            src/posix/osalTime.c
-            src/posix/osalMutex.c
-            src/posix/osalSemaphore.c
-            src/posix/osalMessageQueue.c
-            src/posix/osalThread.c
-            src/posix/osalEventFlags.c
+            src/posix/osal_time.c
+            src/posix/osal_mutex.c
+            src/posix/osal_semaphore.c
+            src/posix/osal_message_queue.c
+            src/posix/osal_thread.c
+            src/posix/osal_event_flags.c
+            src/posix/osal_memory.c
     )
     find_package(Threads REQUIRED)
     target_link_libraries(osal PRIVATE Threads::Threads)
     target_compile_definitions(osal PRIVATE OSAL_PLATFORM_POSIX _GNU_SOURCE)
 
+elseif(OSAL_PLATFORM STREQUAL "MACOS")
+    target_sources(osal
+        PRIVATE
+            src/macos/osal_time.c
+            src/macos/osal_mutex.c
+            src/macos/osal_semaphore.c
+            src/macos/osal_message_queue.c
+            src/macos/osal_thread.c
+            src/macos/osal_event_flags.c
+            src/macos/osal_memory.c
+    )
+    find_package(Threads REQUIRED)
+    target_link_libraries(osal PRIVATE Threads::Threads)
+    target_compile_definitions(osal PRIVATE OSAL_PLATFORM_MACOS)
+
 elseif(OSAL_PLATFORM STREQUAL "FREERTOS")
     target_sources(osal
         PRIVATE
-            src/freertos/osalTime.c
-            src/freertos/osalMutex.c
-            src/freertos/osalSemaphore.c
-            src/freertos/osalMessageQueue.c
-            src/freertos/osalThread.c
-            src/freertos/osalEventFlags.c
+            src/freertos/osal_time.c
+            src/freertos/osal_mutex.c
+            src/freertos/osal_semaphore.c
+            src/freertos/osal_message_queue.c
+            src/freertos/osal_thread.c
+            src/freertos/osal_event_flags.c
+            src/freertos/osal_memory.c
     )
     # User must provide FreeRTOS include paths and library via other means
     # or we can try to find it if a standard package exists (rare for embedded)
