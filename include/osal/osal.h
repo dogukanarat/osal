@@ -12,13 +12,14 @@ extern "C"
 
 /* Includes */
 
-#include "osal/osalTypes.h"
-#include "osal/osalEventFlags.h"
-#include "osal/osalMutex.h"
-#include "osal/osalSemaphore.h"
-#include "osal/osalThread.h"
-#include "osal/osalTime.h"
-#include "osal/osalMessageQueue.h"
+#include "osal/osal_types.h"
+#include "osal/osal_event_flags.h"
+#include "osal/osal_memory.h"
+#include "osal/osal_mutex.h"
+#include "osal/osal_semaphore.h"
+#include "osal/osal_thread.h"
+#include "osal/osal_time.h"
+#include "osal/osal_message_queue.h"
 
 /* Configurations */
 
