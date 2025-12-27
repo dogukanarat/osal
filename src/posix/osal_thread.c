@@ -157,3 +157,17 @@ osal_thread_handle_t osal_thread_get_id(void)
     pthread_once(&g_osal_key_once, init_thread_key);
     return (osal_thread_handle_t)pthread_getspecific(g_osal_thread_key);
 }
+
+osal_status_t osal_thread_join(osal_thread_handle_t thread)
+{
+    osal_thread_control_block_t *cb = (osal_thread_control_block_t *)thread;
+
+    if (cb == NULL)
+    {
+        return OSAL_ERROR_PARAMETER;
+    }
+
+    pthread_join(cb->thread, NULL);
+
+    return OSAL_SUCCESS;
+}

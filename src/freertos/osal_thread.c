@@ -5,6 +5,7 @@
 /* Includes */
 #include "osal/osal_thread.h"
 #include "FreeRTOS.h"
+#include "osal/osal_types.h"
 #include "task.h"
 #include "semphr.h"
 #include "queue.h"
@@ -77,4 +78,11 @@ void osal_thread_yield(void)
 osal_thread_handle_t osal_thread_get_id(void)
 {
     return (osal_thread_handle_t)xTaskGetCurrentTaskHandle();
+}
+
+osal_status_t osal_thread_join(osal_thread_handle_t thread)
+{
+    /* FreeRTOS does not support joining threads */
+    (void)thread;
+    return OSAL_ERROR_NOT_IMPLEMENTED;
 }

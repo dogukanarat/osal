@@ -71,6 +71,13 @@ void osal_thread_yield(void);
  */
 osal_thread_handle_t osal_thread_get_id(void);
 
+/**
+ * @brief Join a thread.
+ * @param thread Handle to the thread to join.
+ * @return OSAL_SUCCESS on success.
+ */
+osal_status_t osal_thread_join(osal_thread_handle_t thread);
+
 #ifdef __cplusplus
 }
 #endif

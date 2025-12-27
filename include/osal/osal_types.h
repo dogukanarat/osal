@@ -34,7 +34,9 @@ typedef enum
     OSAL_ERROR_RESOURCE,
     OSAL_ERROR_PARAMETER,
     OSAL_ERROR_NOMEM,
-    OSAL_ERROR_ISR
+    OSAL_ERROR_ISR,
+    OSAL_ERROR_NOT_IMPLEMENTED,
+    OSAL_ERROR_LAST,
 } osal_status_t;
 
 /* External Declarations */

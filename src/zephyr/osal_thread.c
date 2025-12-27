@@ -189,3 +189,12 @@ osal_thread_handle_t osal_thread_get_id(void)
      */
     return (osal_thread_handle_t)k_thread_custom_data_get();
 }
+
+osal_status_t osal_thread_join(osal_thread_handle_t thread)
+{
+    /* Zephyr does not support joining threads directly.
+       Threads must be designed to signal completion via other means (e.g., semaphores).
+    */
+    (void)thread;
+    return OSAL_ERROR_NOT_IMPLEMENTED;
+}
