@@ -3,7 +3,7 @@
 /* All Rights Reserved */
 
 /* Includes */
-#include <osal/osalMessageQueue.h>
+#include <osal/osal_message_queue.h>
 #include <zephyr/kernel.h>
 #include <stdlib.h>
 #include <string.h>

@@ -4,7 +4,6 @@
 
 /* Includes */
 #include "osal/osal_time.h"
-#include <osal/osal.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <string.h>

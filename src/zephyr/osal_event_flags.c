@@ -3,7 +3,7 @@
 /* All Rights Reserved */
 
 /* Includes */
-#include <osal/osalEventFlags.h>
+#include <osal/osal_event_flags.h>
 #include <zephyr/kernel.h>
 #include <stdlib.h>
 

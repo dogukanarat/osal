@@ -3,7 +3,7 @@
 /* All Rights Reserved */
 
 /* Includes */
-#include <osal/osalThread.h>
+#include <osal/osal_thread.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <string.h>

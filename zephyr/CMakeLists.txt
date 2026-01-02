@@ -3,13 +3,13 @@ zephyr_library()
 
 # Add the Zephyr port sources you just created
 zephyr_library_sources(
-    ../src/zephyr/osalTime.c
-    ../src/zephyr/osalSemaphore.c
-    ../src/zephyr/osalMutex.c
-    ../src/zephyr/osalMessageQueue.c
-    ../src/zephyr/osalEventFlags.c
-    ../src/zephyr/osalThread.c
-    ../src/zephyr/osalMemory.c
+    ../src/zephyr/osal_time.c
+    ../src/zephyr/osal_semaphore.c
+    ../src/zephyr/osal_mutex.c
+    ../src/zephyr/osal_message_queue.c
+    ../src/zephyr/osal_event_flags.c
+    ../src/zephyr/osal_thread.c
+    ../src/zephyr/osal_memory.c
 )
 
 # Add include directories (publicly accessible to other modules)

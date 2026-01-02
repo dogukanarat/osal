@@ -3,7 +3,7 @@
 /* All Rights Reserved */
 
 /* Includes */
-#include <osal/osalMutex.h>
+#include <osal/osal_mutex.h>
 #include <zephyr/kernel.h>
 #include <stdlib.h>
 
