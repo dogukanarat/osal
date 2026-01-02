@@ -3,7 +3,13 @@
 /* All Rights Reserved */
 
 /* Includes */
-#include "osal/osal.h"
+#include "osal/osal_memory.h"
+#include "osal/osal_time.h"
+#include "osal/osal_mutex.h"
+#include "osal/osal_semaphore.h"
+#include "osal/osal_message_queue.h"
+#include "osal/osal_event_flags.h"
+#include "osal/osal_thread.h"
 #include "unity/unity.h"
 #include <string.h>
 #include <stdio.h>

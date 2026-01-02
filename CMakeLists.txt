@@ -13,8 +13,8 @@ project(osal
 # Build Options
 # ============================================================================
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(BUILD_TESTS "Build test suite" OFF)
-option(BUILD_EXAMPLES "Build example applications" OFF)
+option(BUILD_TESTS "Build test suite" ON)
+option(BUILD_EXAMPLES "Build example applications" ON)
 
 # ============================================================================
 # Export compile commands for IDE integration
