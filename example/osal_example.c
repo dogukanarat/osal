@@ -1,19 +1,19 @@
 /* osal_example.c - OSAL Verification Example */
 
-#include "osal/osalEventFlags.h"
-#include "osal/osalMessageQueue.h"
-#include "osal/osalMutex.h"
-#include "osal/osalSemaphore.h"
-#include "osal/osalThread.h"
-#include "osal/osalTime.h"
+#include "osal/osal_event_flags.h"
+#include "osal/osal_message_queue.h"
+#include "osal/osal_mutex.h"
+#include "osal/osal_semaphore.h"
+#include "osal/osal_thread.h"
+#include "osal/osal_time.h"
 #include <stdio.h>
 #include <string.h>
 
 /* Objects */
-osalMutexHandle_t Mutex;
-osalSemaphoreHandle_t Sem;
-osalMessageQueueHandle_t Queue;
-osalEventFlagsHandle_t Flags;
+osal_mutex_handle_t Mutex;
+osal_semaphore_handle_t Sem;
+osal_message_queue_handle_t Queue;
+osal_event_flags_handle_t Flags;
 
 /* Thread 1: Producer */
 void thread1Func(void *arg)
@@ -25,28 +25,28 @@ void thread1Func(void *arg)
 
     while (count < 5)
     {
-        osalDelayMs(100);
+        osal_delay_ms(100);
 
         /* Mutex test */
-        osalMutexLock(Mutex, OSAL_WAIT_FOREVER);
+        osal_mutex_lock(Mutex, OSAL_WAIT_FOREVER);
         printf("Thread 1: Locked mutex\n");
-        osalDelayMs(50);
+        osal_delay_ms(50);
         printf("Thread 1: Unlocking mutex\n");
-        osalMutexUnlock(Mutex);
+        osal_mutex_unlock(Mutex);
 
         /* Queue test */
         printf("Thread 1: Sending %d to queue\n", count);
-        osalMessageQueueSend(Queue, &count, OSAL_WAIT_FOREVER);
+        osal_message_queue_send(Queue, &count, OSAL_WAIT_FOREVER);
 
         /* Semaphore test */
         printf("Thread 1: Giving semaphore\n");
-        osalSemaphoreGive(Sem);
+        osal_semaphore_give(Sem);
 
         /* Event flags test */
         if (count == 4)
         {
             printf("Thread 1: Setting event flag 0x01\n");
-            osalEventFlagsSet(Flags, 0x01);
+            osal_event_flags_set(Flags, 0x01);
         }
 
         count++;
@@ -68,11 +68,11 @@ void thread2Func(void *arg)
     {
         /* Semaphore test */
         printf("Thread 2: Waiting for semaphore...\n");
-        osalSemaphoreTake(Sem, OSAL_WAIT_FOREVER);
+        osal_semaphore_take(Sem, OSAL_WAIT_FOREVER);
         printf("Thread 2: Got semaphore\n");
 
         /* Queue test */
-        if (osalMessageQueueReceive(Queue, &msg, 1000) == OSAL_SUCCESS)
+        if (osal_message_queue_receive(Queue, &msg, 1000) == OSAL_SUCCESS)
         {
             printf("Thread 2: Received %d from queue\n", msg);
         }
@@ -84,7 +84,7 @@ void thread2Func(void *arg)
 
     /* Event flags test */
     printf("Thread 2: Waiting for event flag 0x01...\n");
-    flags = osalEventFlagsWait(Flags, 0x01, OSAL_EVENT_WAIT_ALL, 2000);
+    flags = osal_event_flags_wait(Flags, 0x01, OSAL_EVENT_WAIT_ALL, 2000);
     if (flags & 0x01)
     {
         printf("Thread 2: Got event flag 0x01\n");
@@ -102,73 +102,73 @@ int main(void)
     printf("OSAL Verification Example\n");
 
     /* Create objects */
-    osalMutexAttr_t mutexAttr = {.name = "TestMutex", .attrBits = OSAL_MUTEX_RECURSIVE};
-    Mutex = osalMutexCreate(&mutexAttr);
+    osal_mutex_attr_t mutex_attr = {.name = "TestMutex", .attr_bits = OSAL_MUTEX_RECURSIVE};
+    Mutex = osal_mutex_create(&mutex_attr);
     if (!Mutex)
     {
         printf("Failed to create mutex\n");
     }
 
-    osalSemaphoreAttr_t semAttr = {.name = "TestSem", .maxCount = 10, .initialCount = 0};
-    Sem = osalSemaphoreCreate(&semAttr);
+    osal_semaphore_attr_t semAttr = {.name = "TestSem", .max_count = 10, .initial_count = 0};
+    Sem = osal_semaphore_create(&semAttr);
     if (!Sem)
     {
         printf("Failed to create semaphore\n");
     }
 
-    osalMessageQueueAttr_t queueAttr = {.name = "TestQueue"};
-    Queue = osalMessageQueueCreate(10, sizeof(uint32_t), &queueAttr);
+    osal_message_queue_attr_t queueAttr = {.name = "TestQueue"};
+    Queue = osal_message_queue_create(10, sizeof(uint32_t), &queueAttr);
     if (!Queue)
     {
         printf("Failed to create queue\n");
     }
 
-    osalEventFlagsAttr_t flagsAttr = {.name = "TestFlags"};
-    Flags = osalEventFlagsCreate(&flagsAttr);
+    osal_event_flags_attr_t flagsAttr = {.name = "TestFlags"};
+    Flags = osal_event_flags_create(&flagsAttr);
     if (!Flags)
     {
         printf("Failed to create event flags\n");
     }
 
     /* Create threads */
-    osalThreadAttr_t t1Attr = {
+    osal_thread_attr_t t1Attr = {
         .name = "Thread1",
-        .stackSize = 4096,
+        .stack_size = 4096,
         .priority = OSAL_THREAD_PRIORITY_NORMAL};
-    osalThreadHandle_t t1 = osalThreadCreate(thread1Func, NULL, &t1Attr);
+    osal_thread_handle_t t1 = osal_thread_create(thread1Func, NULL, &t1Attr);
     if (!t1)
     {
         printf("Failed to create Thread 1\n");
     }
 
-    osalThreadAttr_t t2Attr = {
+    osal_thread_attr_t t2Attr = {
         .name = "Thread2",
-        .stackSize = 4096,
+        .stack_size = 4096,
         .priority = OSAL_THREAD_PRIORITY_NORMAL};
-    osalThreadHandle_t t2 = osalThreadCreate(thread2Func, NULL, &t2Attr);
+    osal_thread_handle_t t2 = osal_thread_create(thread2Func, NULL, &t2Attr);
     if (!t2)
     {
         printf("Failed to create Thread 2\n");
     }
 
     /* Main thread waits */
-    osalDelayMs(3000);
+    osal_delay_ms(3000);
 
     /* ISR API Test (Simulated) */
     printf("Testing ISR APIs (Abstracted)...\n");
-    osalSemaphoreGive(Sem);
+    osal_semaphore_give(Sem);
     uint32_t val = 123;
-    osalMessageQueueSend(Queue, &val, OSAL_NO_WAIT);
-    osalEventFlagsSet(Flags, 0x02);
+    osal_message_queue_send(Queue, &val, OSAL_NO_WAIT);
+    osal_event_flags_set(Flags, 0x02);
     printf("ISR APIs called successfully\n");
 
     /* Clean up */
-    osalThreadDelete(t1);
-    osalThreadDelete(t2);
-    osalMutexDelete(Mutex);
-    osalSemaphoreDelete(Sem);
-    osalMessageQueueDelete(Queue);
-    osalEventFlagsDelete(Flags);
+    osal_thread_delete(t1);
+    osal_thread_delete(t2);
+    osal_mutex_delete(Mutex);
+    osal_semaphore_delete(Sem);
+    osal_message_queue_delete(Queue);
+    osal_event_flags_delete(Flags);
 
     printf("Example finished\n");
     return 0;

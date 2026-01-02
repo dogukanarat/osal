@@ -1,10 +1,10 @@
 /* test_posix.c - Comprehensive Unit Tests for OSAL POSIX */
 
-#include "osal/osalMutex.h"
-#include "osal/osalSemaphore.h"
-#include "osal/osalMessageQueue.h"
-#include "osal/osalTime.h"
-#include "osal/osalTypes.h"
+#include "osal/osal_mutex.h"
+#include "osal/osal_semaphore.h"
+#include "osal/osal_message_queue.h"
+#include "osal/osal_time.h"
+#include "osal/osal_types.h"
 #include "unity.h" /* */
 #include <stdio.h>
 #include <string.h>
@@ -144,69 +144,69 @@ int __wrap_pthread_cond_broadcast(pthread_cond_t *cond) { (void)cond; return 0; 
 void test_mutex(void)
 {
     /* 1. Create Success */
-    osalMutexHandle_t m = osalMutexCreate(NULL);
+    osal_mutex_handle_t m = osal_mutex_create(NULL);
     TEST_ASSERT_NOT_NULL(m);
 
     /* 2. Lock Success */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexLock(m, OSAL_WAIT_FOREVER));
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexUnlock(m));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_mutex_lock(m, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_mutex_unlock(m));
 
     /* 3. Lock Fail (Simulated Error) */
     mock_mutex_lock_ret = ETIMEDOUT;
-    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osalMutexLock(m, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osal_mutex_lock(m, OSAL_WAIT_FOREVER));
 
     /* 4. Delete */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMutexDelete(m));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_mutex_delete(m));
 }
 
 void test_semaphore(void)
 {
-    osalSemaphoreAttr_t attr = { .name = "Sem", .maxCount = 10, .initialCount = 0 };
+    osal_semaphore_attr_t attr = { .name = "Sem", .max_count = 10, .initial_count = 0 };
 
     /* 1. Create Success */
-    osalSemaphoreHandle_t s = osalSemaphoreCreate(&attr);
+    osal_semaphore_handle_t s = osal_semaphore_create(&attr);
     TEST_ASSERT_NOT_NULL(s);
 
     /* 2. Take Success */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreTake(s, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_semaphore_take(s, OSAL_WAIT_FOREVER));
 
     /* 3. Give Success */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreGive(s));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_semaphore_give(s));
 
     /* 4. Take Timeout */
     mock_sem_timedwait_ret = ETIMEDOUT;
-    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osalSemaphoreTake(s, 100));
+    TEST_ASSERT_EQUAL(OSAL_ERROR_TIMEOUT, osal_semaphore_take(s, 100));
 
     /* 5. Delete */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalSemaphoreDelete(s));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_semaphore_delete(s));
 }
 
 void test_queue(void)
 {
     /* 1. Create Success */
-    osalMessageQueueHandle_t q = osalMessageQueueCreate(5, sizeof(int), NULL);
+    osal_message_queue_handle_t q = osal_message_queue_create(5, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(q);
 
     /* 2. Send Success */
     int val = 42;
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueSend(q, &val, OSAL_NO_WAIT));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_message_queue_send(q, &val, OSAL_NO_WAIT));
 
     /* 3. Receive Success */
     int rxVal = 0;
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueReceive(q, &rxVal, OSAL_WAIT_FOREVER));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_message_queue_receive(q, &rxVal, OSAL_WAIT_FOREVER));
 
     /* 4. Delete */
-    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osalMessageQueueDelete(q));
+    TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_message_queue_delete(q));
 }
 
 void test_time(void)
 {
     /* 1. Get Tick */
-    TEST_ASSERT_EQUAL_UINT32(1000000, osalGetTickMs());
+    TEST_ASSERT_EQUAL_UINT32(1000000, osal_get_tick_ms());
 
     /* 2. Delay */
-    osalDelayMs(500);
-    TEST_ASSERT_EQUAL_UINT32(1000500, osalGetTickMs());
+    osal_delay_ms(500);
+    TEST_ASSERT_EQUAL_UINT32(1000500, osal_get_tick_ms());
 }
 
 int main(void)
