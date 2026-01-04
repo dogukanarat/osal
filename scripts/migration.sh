@@ -209,16 +209,16 @@ perform_rename() {
 
     # Step 2: Rename files (must be done before renaming directories)
     # CMake config uses lowercase for package name
-    if [ -f "$PROJECT_DIR/cmake/${old_lower}Config.cmake.in" ]; then
+    if [ -f "$PROJECT_DIR/cmake/${old_pascal}Config.cmake.in" ]; then
         rename_file_or_dir \
-            "$PROJECT_DIR/cmake/${old_lower}Config.cmake.in" \
-            "$PROJECT_DIR/cmake/${new_lower}Config.cmake.in"
+            "$PROJECT_DIR/cmake/${old_pascal}Config.cmake.in" \
+            "$PROJECT_DIR/cmake/${new_pascal}Config.cmake.in"
     fi
 
-    if [ -f "$PROJECT_DIR/cmake/${old_lower}.pc.in" ]; then
+    if [ -f "$PROJECT_DIR/cmake/${old_pascal}.pc.in" ]; then
         rename_file_or_dir \
-            "$PROJECT_DIR/cmake/${old_lower}.pc.in" \
-            "$PROJECT_DIR/cmake/${new_lower}.pc.in"
+            "$PROJECT_DIR/cmake/${old_pascal}.pc.in" \
+            "$PROJECT_DIR/cmake/${new_pascal}.pc.in"
     fi
 
     # Header files use snake_case
@@ -258,7 +258,7 @@ perform_rename() {
     if [ -d "$PROJECT_DIR/include/${old_snake}" ]; then
         rename_file_or_dir \
             "$PROJECT_DIR/include/${old_snake}" \
-            "$PROJECT_DIR/include/${new_lower}"
+            "$PROJECT_DIR/include/${new_snake}"
     fi
     
     echo
