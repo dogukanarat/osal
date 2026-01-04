@@ -60,3 +60,6 @@ IncludeBlocks: Preserve
 # Other
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 2
+
+# Penalties
+PenaltyReturnTypeOnItsOwnLine: 1000
