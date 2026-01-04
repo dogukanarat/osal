@@ -1,4 +1,4 @@
-/* libscaffoldInternal.c - one line definition */
+/* libscaffold_int.c - one line definition */
 
 /* All Rights Reserved */
 

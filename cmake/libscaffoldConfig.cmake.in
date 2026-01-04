@@ -1,16 +1,42 @@
 @PACKAGE_INIT@
 
-# libscaffold CMake configuration file
+# ==============================================================================
+# libscaffold CMake Package Configuration File
+# ==============================================================================
+# This file is used by find_package(libscaffold) to locate and configure
+# the libscaffold library for use in other CMake projects.
 
-# Provide information about the package
+# ==============================================================================
+# Package Version Information
+# ==============================================================================
 set(LIBSCAFFOLD_VERSION "@PROJECT_VERSION@")
 set(LIBSCAFFOLD_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
 set(LIBSCAFFOLD_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
 set(LIBSCAFFOLD_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 
-# Check if components are requested
+# ==============================================================================
+# Dependencies
+# ==============================================================================
+# Find and configure any dependencies that libscaffold requires
+# Add dependencies here as needed, for example:
+# find_dependency(SomePackage REQUIRED)
+
+include(CMakeFindDependencyMacro)
+
+# Note: Standard C library dependencies (like math library) are handled
+# automatically by CMake and don't need to be listed here
+
+# Example dependency declarations (uncomment and modify as needed):
+# find_dependency(Threads)
+# find_dependency(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+
+# ==============================================================================
+# Component Support
+# ==============================================================================
+# Supported components for this package
 set(_libscaffold_supported_components Runtime Development)
 
+# Validate requested components
 foreach(_comp ${libscaffold_FIND_COMPONENTS})
     if(NOT _comp IN_LIST _libscaffold_supported_components)
         set(libscaffold_FOUND False)
@@ -18,13 +44,34 @@ foreach(_comp ${libscaffold_FIND_COMPONENTS})
     endif()
 endforeach()
 
-# Include the targets file
-include("${CMAKE_CURRENT_LIST_DIR}/libscaffoldTargets.cmake")
+# ==============================================================================
+# Import Targets
+# ==============================================================================
+# Include the targets file generated during installation
+# This file defines the libscaffold::libscaffold target
+if(NOT TARGET libscaffold::libscaffold)
+    include("${CMAKE_CURRENT_LIST_DIR}/libscaffoldTargets.cmake")
+endif()
 
-# Check that the library target exists
+# Verify that the main library target was successfully imported
 if(NOT TARGET libscaffold::libscaffold)
     set(libscaffold_FOUND False)
     set(libscaffold_NOT_FOUND_MESSAGE "Target libscaffold::libscaffold not found")
 endif()
 
+# ==============================================================================
+# Package Variables
+# ==============================================================================
+# Set convenience variables for downstream projects
+set(LIBSCAFFOLD_LIBRARIES libscaffold::libscaffold)
+set(LIBSCAFFOLD_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+
+# Legacy variables for compatibility (not recommended for new projects)
+set(libscaffold_LIBRARIES ${LIBSCAFFOLD_LIBRARIES})
+set(libscaffold_INCLUDE_DIRS ${LIBSCAFFOLD_INCLUDE_DIRS})
+
+# ==============================================================================
+# Finalization
+# ==============================================================================
+# Validate that all required components are available
 check_required_components(libscaffold)

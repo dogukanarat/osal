@@ -3,6 +3,7 @@ build/
 build-*/
 cmake-build-*/
 out/
+.cache
 
 # CMake generated files
 CMakeCache.txt
@@ -60,7 +61,6 @@ compile_commands.json
 *.pdb
 
 # IDE and Editor files
-.vscode/
 .idea/
 *.swp
 *.swo

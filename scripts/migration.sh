@@ -67,6 +67,14 @@ to_pascal() {
     echo "$(echo "${str:0:1}" | tr '[:lower:]' '[:upper:]')${str:1}"
 }
 
+# Convert PascalCase to snake_case (e.g., MyNewLib -> my_new_lib)
+to_snake_case() {
+    local str="$1"
+    # Insert underscore before uppercase letters (except the first one)
+    # Then convert to lowercase
+    echo "$str" | sed 's/\([A-Z]\)/_\1/g' | sed 's/^_//' | tr '[:upper:]' '[:lower:]'
+}
+
 # ============================================================================
 # Validation
 # ============================================================================
@@ -93,23 +101,27 @@ validate_name() {
 
 rename_in_file() {
     local file="$1"
-    local old_lower="$2"
-    local new_lower="$3"
+    local old_snake="$2"
+    local new_snake="$3"
     local old_pascal="$4"
     local new_pascal="$5"
     local old_upper="$6"
     local new_upper="$7"
-    
+    local old_lower="$8"
+    local new_lower="$9"
+
     if [ "$DRY_RUN" = true ]; then
         print_info "Would update content in: $file"
         return
     fi
-    
+
     # Use sed to replace all occurrences while preserving case
+    # Order matters: do more specific replacements first
     sed -i \
-        -e "s/${old_lower}/${new_lower}/g" \
+        -e "s/${old_snake}/${new_snake}/g" \
         -e "s/${old_pascal}/${new_pascal}/g" \
         -e "s/${old_upper}/${new_upper}/g" \
+        -e "s/${old_lower}/${new_lower}/g" \
         "$file"
 }
 
@@ -136,83 +148,109 @@ rename_file_or_dir() {
 
 perform_rename() {
     local new_name="$1"
-    
+
     # Generate all case variations
     local old_lower="libscaffold"
     local new_lower="$(to_lower "$new_name")"
-    
+
+    local old_snake="libscaffold"
+    local new_snake="$(to_snake_case "$new_name")"
+
     local old_pascal="LibScaffold"
     local new_pascal="$(to_pascal "$new_name")"
-    
+
     local old_upper="LIBSCAFFOLD"
-    local new_upper="$(to_upper "$new_name")"
-    
-    print_info "Renaming scaffold from '$old_lower' to '$new_lower'"
+    local new_upper="$(to_upper "$(to_snake_case "$new_name")")"
+
+    print_info "Renaming scaffold from 'LibScaffold' to '$new_pascal'"
     print_info "Case variations:"
-    print_info "  lowercase: $old_lower -> $new_lower"
-    print_info "  PascalCase: $old_pascal -> $new_pascal"
-    print_info "  UPPERCASE: $old_upper -> $new_upper"
+    print_info "  lowercase: $old_lower -> $new_lower (for directories, packages)"
+    print_info "  snake_case: $old_snake -> $new_snake (for filenames)"
+    print_info "  PascalCase: $old_pascal -> $new_pascal (for CMake project)"
+    print_info "  UPPERCASE: $old_upper -> $new_upper (for header guards)"
     echo
     
     # Step 1: Update file contents
     print_info "Step 1: Updating file contents..."
-    
+
     local files_to_update=(
         "CMakeLists.txt"
         "cmake/${old_lower}Config.cmake.in"
-        "include/${old_lower}/${old_lower}.h"
-        "include/${old_lower}/${old_lower}Types.h"
-        "src/${old_lower}.c"
-        "src/${old_lower}Internal.c"
+        "cmake/${old_lower}.pc.in"
+        "include/${old_snake}/${old_snake}.h"
+        "include/${old_snake}/${old_snake}_types.h"
+        "src/${old_snake}.c"
+        "src/${old_snake}_int.c"
         "README.md"
+        "test/test_${old_snake}.c"
+        "test/CMakeLists.txt"
+        "CLAUDE.md"
+        "ci/debug.sh"
+        "ci/release.sh"
+        "ci/install.sh"
+        "ci/README.md"
+        ".github/workflows/ci.yml"
+        ".github/workflows/format-check.yml"
+        ".github/workflows/static-analysis.yml"
     )
-    
+
     for file in "${files_to_update[@]}"; do
         local full_path="$SCRIPT_DIR/$file"
         if [ -f "$full_path" ]; then
-            rename_in_file "$full_path" "$old_lower" "$new_lower" "$old_pascal" "$new_pascal" "$old_upper" "$new_upper"
+            # Replace all variations: snake_case, PascalCase, UPPERCASE, lowercase
+            rename_in_file "$full_path" "$old_snake" "$new_snake" "$old_pascal" "$new_pascal" "$old_upper" "$new_upper" "$old_lower" "$new_lower"
             print_success "Updated: $file"
         fi
     done
     
     echo
     print_info "Step 2: Renaming files and directories..."
-    
+
     # Step 2: Rename files (must be done before renaming directories)
+    # CMake config uses lowercase for package name
     if [ -f "$SCRIPT_DIR/cmake/${old_lower}Config.cmake.in" ]; then
         rename_file_or_dir \
             "$SCRIPT_DIR/cmake/${old_lower}Config.cmake.in" \
             "$SCRIPT_DIR/cmake/${new_lower}Config.cmake.in"
     fi
-    
-    if [ -f "$SCRIPT_DIR/include/${old_lower}/${old_lower}.h" ]; then
+
+    # Header files use snake_case
+    if [ -f "$SCRIPT_DIR/include/${old_snake}/${old_snake}.h" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_lower}/${old_lower}.h" \
-            "$SCRIPT_DIR/include/${old_lower}/${new_lower}.h"
+            "$SCRIPT_DIR/include/${old_snake}/${old_snake}.h" \
+            "$SCRIPT_DIR/include/${old_snake}/${new_snake}.h"
     fi
-    
-    if [ -f "$SCRIPT_DIR/include/${old_lower}/${old_lower}Types.h" ]; then
+
+    if [ -f "$SCRIPT_DIR/include/${old_snake}/${old_snake}_types.h" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_lower}/${old_lower}Types.h" \
-            "$SCRIPT_DIR/include/${old_lower}/${new_lower}Types.h"
+            "$SCRIPT_DIR/include/${old_snake}/${old_snake}_types.h" \
+            "$SCRIPT_DIR/include/${old_snake}/${new_snake}_types.h"
     fi
-    
-    if [ -f "$SCRIPT_DIR/src/${old_lower}.c" ]; then
+
+    # Source files use snake_case
+    if [ -f "$SCRIPT_DIR/src/${old_snake}.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/src/${old_lower}.c" \
-            "$SCRIPT_DIR/src/${new_lower}.c"
+            "$SCRIPT_DIR/src/${old_snake}.c" \
+            "$SCRIPT_DIR/src/${new_snake}.c"
     fi
-    
-    if [ -f "$SCRIPT_DIR/src/${old_lower}Internal.c" ]; then
+
+    if [ -f "$SCRIPT_DIR/src/${old_snake}_int.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/src/${old_lower}Internal.c" \
-            "$SCRIPT_DIR/src/${new_lower}Internal.c"
+            "$SCRIPT_DIR/src/${old_snake}_int.c" \
+            "$SCRIPT_DIR/src/${new_snake}_int.c"
     fi
-    
-    # Step 3: Rename directories
-    if [ -d "$SCRIPT_DIR/include/${old_lower}" ]; then
+
+    # Test files use snake_case with test_ prefix
+    if [ -f "$SCRIPT_DIR/test/test_${old_snake}.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_lower}" \
+            "$SCRIPT_DIR/test/test_${old_snake}.c" \
+            "$SCRIPT_DIR/test/test_${new_snake}.c"
+    fi
+
+    # Step 3: Rename directories (directories use lowercase, not snake_case)
+    if [ -d "$SCRIPT_DIR/include/${old_snake}" ]; then
+        rename_file_or_dir \
+            "$SCRIPT_DIR/include/${old_snake}" \
             "$SCRIPT_DIR/include/${new_lower}"
     fi
     
@@ -233,7 +271,7 @@ perform_rename() {
 main() {
     # Parse arguments
     if [ $# -eq 0 ]; then
-        print_error "Usage: $0 <new_library_name> [--dry-run]"
+        print_error "Usage: $0 <NewLibNamePascalCase> [--dry-run]"
         exit 1
     fi
     

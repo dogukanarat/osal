@@ -1,7 +1,7 @@
-# ============================================================================
-# Project Configuration
-# ============================================================================
-cmake_minimum_required(VERSION 3.14)
+# ==============================================================================
+# Project Definition
+# ==============================================================================
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(libscaffold
     VERSION 1.0.0
@@ -9,117 +9,263 @@ project(libscaffold
     LANGUAGES C
 )
 
-# ============================================================================
+# ==============================================================================
+# CMake Modules and Policies
+# ==============================================================================
+# Include standard CMake modules
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Export compile commands for IDE integration (clangd, ccls, etc.)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Export compile commands" FORCE)
+
+# ==============================================================================
 # Build Options
-# ============================================================================
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(BUILD_TESTS "Build test suite" OFF)
+# ==============================================================================
+# Option to build shared libraries instead of static (default: OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries instead of static" OFF)
+
+# Option to build the test suite (default: OFF)
+option(BUILD_TESTS "Build unit tests with Unity framework" OFF)
+
+# Option to build example applications (default: OFF)
 option(BUILD_EXAMPLES "Build example applications" OFF)
 
-# ============================================================================
-# Export compile commands for IDE integration
-# ============================================================================
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# ==============================================================================
+# Project Configuration
+# ==============================================================================
+# Set default build type to Release if not specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to 'Release' as none was specified")
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build" FORCE)
+    # Set possible build type values for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        "Debug" "Release" "MinSizeRel" "RelWithDebInfo"
+    )
+endif()
 
-# ============================================================================
-# Library Target
-# ============================================================================
+# ==============================================================================
+# Library Target Definition
+# ==============================================================================
+# Create the main library target (static or shared based on BUILD_SHARED_LIBS)
 add_library(libscaffold)
+
+# Create an alias for consistent namespacing (allows using libscaffold::libscaffold)
 add_library(libscaffold::libscaffold ALIAS libscaffold)
 
-# Core sources
+# Add source files to the library target
 target_sources(libscaffold
     PRIVATE
-        src/libscaffold.c
-        src/libscaffoldInternal.c
+        # Core implementation files
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/libscaffold.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/libscaffold_int.c
 )
 
-# Include directories
+# ==============================================================================
+# Library Include Directories
+# ==============================================================================
+# Configure include directories for the library
+# PUBLIC: Propagated to targets linking against this library
+# BUILD_INTERFACE: Used when building the library
+# INSTALL_INTERFACE: Used when library is installed
 target_include_directories(libscaffold
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-# Compile features
+# ==============================================================================
+# Compiler Features and Options
+# ==============================================================================
+# Require C99 standard (public requirement propagates to consumers)
 target_compile_features(libscaffold PUBLIC c_std_99)
 
-# Compile options
+# Add compiler warnings (private - only when building this library)
 target_compile_options(libscaffold
     PRIVATE
-        $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
-        $<$<C_COMPILER_ID:MSVC>:/W4>
+        # GCC and Clang warnings
+        $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
+            -Wall           # Enable common warnings
+            -Wextra         # Enable extra warnings
+            -Wpedantic      # Strict ISO C compliance warnings
+        >
+        # MSVC warnings
+        $<$<C_COMPILER_ID:MSVC>:
+            /W4             # Warning level 4
+        >
 )
 
-# Set library properties
-set_target_properties(libscaffold PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
-    C_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN YES
+# ==============================================================================
+# Library Properties
+# ==============================================================================
+# Set library version and symbol visibility
+set_target_properties(libscaffold
+    PROPERTIES
+        # Library versioning (for shared libraries)
+        VERSION ${PROJECT_VERSION}                  # Full version (e.g., 1.0.0)
+        SOVERSION ${PROJECT_VERSION_MAJOR}          # Major version (e.g., 1)
+
+        # Symbol visibility (hide internal symbols in shared libraries)
+        C_VISIBILITY_PRESET hidden                  # Hide symbols by default
+        VISIBILITY_INLINES_HIDDEN YES               # Hide inline functions
+
+        # Output name (can be customized if needed)
+        OUTPUT_NAME "libscaffold"
 )
 
-# ============================================================================
+# ==============================================================================
+# Dependencies
+# ==============================================================================
+# Find and link external dependencies required by the library
+# Uncomment and modify as needed for your project
+
+# Example: Math library (commonly needed for mathematical functions)
+# find_library(MATH_LIBRARY m)
+# if(MATH_LIBRARY)
+#     target_link_libraries(libscaffold PUBLIC ${MATH_LIBRARY})
+# endif()
+
+# Example: Threading support
+# set(THREADS_PREFER_PTHREAD_FLAG ON)
+# find_package(Threads REQUIRED)
+# target_link_libraries(libscaffold PUBLIC Threads::Threads)
+
+# Example: OpenSSL
+# find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+# target_link_libraries(libscaffold PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+
+# Example: Custom library via pkg-config
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(SOMELIB REQUIRED IMPORTED_TARGET somelibrary>=1.0)
+# target_link_libraries(libscaffold PUBLIC PkgConfig::SOMELIB)
+
+# Note: Use PUBLIC for dependencies that appear in your public headers
+#       Use PRIVATE for dependencies only used in implementation files
+#       Use INTERFACE for header-only dependencies
+
+# ==============================================================================
 # Optional Components
-# ============================================================================
+# ==============================================================================
+# Enable testing if BUILD_TESTS is ON
 if(BUILD_TESTS)
+    message(STATUS "Building tests enabled")
     enable_testing()
     add_subdirectory(test)
 endif()
 
+# Add example subdirectory if BUILD_EXAMPLES is ON
 if(BUILD_EXAMPLES)
+    message(STATUS "Building examples enabled")
     add_subdirectory(example)
 endif()
 
-# ============================================================================
-# Installation
-# ============================================================================
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
-# Install library
-install(TARGETS libscaffold
+# ==============================================================================
+# Installation Rules
+# ==============================================================================
+# Install the library target
+# Components: Runtime (shared libs), Development (static libs, headers)
+install(
+    TARGETS libscaffold
     EXPORT libscaffoldTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+
+    # Shared libraries go to lib/ (Runtime component)
+    LIBRARY
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT Runtime
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        NAMELINK_COMPONENT Development
+
+    # Static libraries go to lib/ (Development component)
+    ARCHIVE
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT Development
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+
+    # Windows DLLs go to bin/ (Runtime component)
+    RUNTIME
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+
+    # Public headers are in the include directory
+    INCLUDES
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# Install public headers
-install(DIRECTORY include/libscaffold
+# Install public header files
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/libscaffold
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT Development
     FILES_MATCHING PATTERN "*.h"
 )
 
-# Install CMake targets
-install(EXPORT libscaffoldTargets
+# ==============================================================================
+# CMake Package Configuration
+# ==============================================================================
+# Install CMake targets file (allows find_package to work)
+install(
+    EXPORT libscaffoldTargets
     FILE libscaffoldTargets.cmake
     NAMESPACE libscaffold::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
     COMPONENT Development
 )
 
-# Generate and install package config files
+# Generate package config file from template
+# This file is used by find_package(libscaffold)
 configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/libscaffoldConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
 )
 
+# Generate package version file
+# Ensures version compatibility when using find_package
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
+    COMPATIBILITY SameMajorVersion  # 1.x.x is compatible with 1.y.z
 )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfigVersion.cmake
+# Install the generated config files
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
     COMPONENT Development
 )
+
+# ==============================================================================
+# pkg-config Support
+# ==============================================================================
+# Generate and install pkg-config file for projects using pkg-config
+# instead of CMake's find_package
+
+# Generate the .pc file from template
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/libscaffold.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/libscaffold.pc
+    @ONLY
+)
+
+# Install the pkg-config file
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/libscaffold.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+    COMPONENT Development
+)
+
+# ==============================================================================
+# Summary
+# ==============================================================================
+message(STATUS "")
+message(STATUS "==================================================")
+message(STATUS "  ${PROJECT_NAME} v${PROJECT_VERSION}")
+message(STATUS "==================================================")
+message(STATUS "  Build type:        ${CMAKE_BUILD_TYPE}")
+message(STATUS "  C Compiler:        ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
+message(STATUS "  Build shared libs: ${BUILD_SHARED_LIBS}")
+message(STATUS "  Build tests:       ${BUILD_TESTS}")
+message(STATUS "  Build examples:    ${BUILD_EXAMPLES}")
+message(STATUS "  Install prefix:    ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "==================================================")
+message(STATUS "")

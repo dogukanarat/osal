@@ -1,0 +1,36 @@
+name: Format Check
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  format-check:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Check formatting
+        run: |
+          # Find all C source and header files
+          SOURCES=$(find src include test -type f \( -name '*.c' -o -name '*.h' \))
+
+          # Check formatting (dry-run with error on mismatch)
+          echo "Checking code formatting..."
+          clang-format --dry-run --Werror $SOURCES
+
+          if [ $? -eq 0 ]; then
+            echo "✓ All files are properly formatted"
+          else
+            echo "✗ Formatting issues found. Run './scripts/format.sh' to fix."
+            exit 1
+          fi

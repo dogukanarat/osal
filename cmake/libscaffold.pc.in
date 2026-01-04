@@ -1,0 +1,32 @@
+# pkg-config file for libscaffold
+# This file allows other projects to discover libscaffold using pkg-config
+
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: @PROJECT_NAME@
+Description: @PROJECT_DESCRIPTION@
+Version: @PROJECT_VERSION@
+URL: https://github.com/dogukanarat/libscaffold
+
+# Libraries to link against
+# Add any additional libraries required by libscaffold here
+# Example: Libs: -L${libdir} -llibscaffold -lm -lpthread
+Libs: -L${libdir} -llibscaffold
+
+# Private libraries only needed when linking statically
+# Example: Libs.private: -lm -lpthread
+Libs.private:
+
+# Include directories
+Cflags: -I${includedir}
+
+# Dependencies (other pkg-config modules required by this library)
+# Example: Requires: openssl >= 1.1.0
+Requires:
+
+# Private dependencies only needed when linking statically
+# Example: Requires.private: zlib >= 1.2.0
+Requires.private:

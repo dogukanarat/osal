@@ -1,0 +1,48 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  clang-tidy:
+    name: clang-tidy analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            clang \
+            clang-tidy \
+            build-essential
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTS=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run clang-tidy
+        run: |
+          # Find all C source files
+          SOURCES=$(find src -type f -name '*.c')
+
+          echo "Running clang-tidy on source files..."
+          echo "$SOURCES" | xargs clang-tidy -p build --warnings-as-errors='*'
+
+          if [ $? -eq 0 ]; then
+            echo "✓ Static analysis passed"
+          else
+            echo "✗ Static analysis found issues"
+            exit 1
+          fi

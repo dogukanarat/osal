@@ -1,0 +1,25 @@
+# .clang-tidy configuration file
+
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  cppcoreguidelines-*,
+  hicpp-*,
+  misc-*,
+  portability-*,
+  google-*,
+  llvm-*,
+  cert-*,
+  concurrency-*
+
+WarningsAsErrors: '*'
+
+HeaderFilterRegex: '.*'
+
+FormatStyle: file
+
+# Additional options can be added below
