@@ -1,4 +1,4 @@
-/* libscaffold_int.c - one line definition */
+/* scaffold_project_int.c - one line definition */
 
 /* All Rights Reserved */
 

@@ -1,6 +1,6 @@
 # Testing Guide
 
-This directory contains unit tests for libscaffold using the [Unity Test Framework](https://github.com/ThrowTheSwitch/Unity).
+This directory contains unit tests for ScaffoldProject using the [Unity Test Framework](https://github.com/ThrowTheSwitch/Unity).
 
 ## Unity Test Framework
 
@@ -27,7 +27,7 @@ ctest
 ctest --verbose
 
 # Run specific test
-./test_libscaffold
+./test_scaffold_project
 ```
 
 ## Writing Tests
@@ -35,7 +35,7 @@ ctest --verbose
 ### Test File Structure
 
 ```c
-#include "libscaffold/libscaffold.h"
+#include "scaffold_project/scaffold_project.h"
 #include "unity.h"
 
 void setUp(void)
@@ -48,16 +48,16 @@ void tearDown(void)
     /* Run after each test */
 }
 
-void test_myFunction_should_returnSuccess(void)
+void test_my_function_should_return_success(void)
 {
-    int result = myFunction();
+    int result = my_function();
     TEST_ASSERT_EQUAL(0, result);
 }
 
 int main(void)
 {
     UNITY_BEGIN();
-    RUN_TEST(test_myFunction_should_returnSuccess);
+    RUN_TEST(test_my_function_should_return_success);
     return UNITY_END();
 }
 ```
@@ -107,14 +107,14 @@ TEST_IGNORE_MESSAGE("Test not implemented yet");
 
 Use descriptive test names following this pattern:
 ```
-test_<functionName>_should_<expectedBehavior>_when_<condition>
+test_<function_name>_should_<expected_behavior>_when_<condition>
 ```
 
 Examples:
 ```c
-void test_init_should_returnSuccess_when_calledFirstTime(void);
-void test_process_should_returnError_when_bufferIsNull(void);
-void test_cleanup_should_freeResources_when_initialized(void);
+void test_init_should_return_success_when_called_first_time(void);
+void test_process_should_return_error_when_buffer_is_null(void);
+void test_cleanup_should_free_resources_when_initialized(void);
 ```
 
 ## Adding New Test Files
@@ -123,7 +123,7 @@ void test_cleanup_should_freeResources_when_initialized(void);
 2. Update `test/CMakeLists.txt`:
    ```cmake
    add_executable(test_mymodule test_mymodule.c)
-   target_link_libraries(test_mymodule PRIVATE libscaffold::libscaffold unity)
+   target_link_libraries(test_mymodule PRIVATE scaffold_project::scaffold_project unity)
    add_test(NAME test_mymodule COMMAND test_mymodule)
    ```
 
@@ -139,22 +139,22 @@ void test_cleanup_should_freeResources_when_initialized(void);
 ## Example Test Suite
 
 ```c
-void test_init_should_returnSuccess_when_calledFirstTime(void)
+void test_init_should_return_success_when_called_first_time(void)
 {
-    int result = libscaffoldInit();
+    int result = scaffold_project_init();
     TEST_ASSERT_EQUAL(0, result);
 }
 
-void test_init_should_returnError_when_calledTwice(void)
+void test_init_should_return_error_when_called_twice(void)
 {
-    libscaffoldInit();
-    int result = libscaffoldInit();
+    scaffold_project_init();
+    int result = scaffold_project_init();
     TEST_ASSERT_NOT_EQUAL(0, result);
 }
 
-void test_process_should_returnError_when_bufferIsNull(void)
+void test_process_should_return_error_when_buffer_is_null(void)
 {
-    int result = libscaffoldProcess(NULL, 0);
+    int result = scaffold_project_process(NULL, 0);
     TEST_ASSERT_NOT_EQUAL(0, result);
 }
 ```

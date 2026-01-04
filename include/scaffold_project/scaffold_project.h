@@ -1,9 +1,9 @@
-/* libscaffold.h - Main API header for libscaffold library */
+/* scaffold_project.h - Main API header for scaffold_project library */
 
 /* All Rights Reserved */
 
-#ifndef INC_LIBSCAFFOLD_H
-#define INC_LIBSCAFFOLD_H
+#ifndef INC_SCAFFOLD_PROJECT_H
+#define INC_SCAFFOLD_PROJECT_H
 
 #ifdef __cplusplus
 extern "C"
@@ -12,7 +12,7 @@ extern "C"
 
 /* Includes */
 
-#include "libscaffold_types.h"
+#include "scaffold_project_types.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -32,7 +32,7 @@ extern "C"
  *
  * @return Version string in format "major.minor.patch"
  */
-const char *libscaffold_get_version(void);
+const char *scaffold_project_get_version(void);
 
 /**
  * @brief Add two integers
@@ -41,7 +41,7 @@ const char *libscaffold_get_version(void);
  * @param b Second operand
  * @return Sum of a and b
  */
-int32_t libscaffold_add(int32_t a, int32_t b);
+int32_t scaffold_project_add(int32_t a, int32_t b);
 
 /**
  * @brief Multiply two integers with error handling
@@ -49,9 +49,9 @@ int32_t libscaffold_add(int32_t a, int32_t b);
  * @param a First operand
  * @param b Second operand
  * @param result Pointer to store result
- * @return LIBSCAFFOLD_SUCCESS on success, error code otherwise
+ * @return SCAFFOLD_PROJECT_SUCCESS on success, error code otherwise
  */
-libscaffold_status_t libscaffold_multiply(
+scaffold_project_status_t scaffold_project_multiply(
     int32_t a,
     int32_t b,
     int32_t *result);
@@ -62,9 +62,9 @@ libscaffold_status_t libscaffold_multiply(
  * @param input Input string to process
  * @param output Buffer to store processed string
  * @param outputSize Size of output buffer
- * @return LIBSCAFFOLD_SUCCESS on success, error code otherwise
+ * @return SCAFFOLD_PROJECT_SUCCESS on success, error code otherwise
  */
-libscaffold_status_t libscaffold_foo(
+scaffold_project_status_t scaffold_project_foo(
     const char *input,
     char *output,
     size_t outputSize);
@@ -75,7 +75,7 @@ libscaffold_status_t libscaffold_foo(
  * @param value Value to validate
  * @return true if valid, false otherwise
  */
-bool libscaffold_bar(int32_t value);
+bool scaffold_project_bar(int32_t value);
 
 /**
  * @brief Compute factorial of a number
@@ -83,10 +83,10 @@ bool libscaffold_bar(int32_t value);
  * @param n Input number (must be >= 0 and <= 12)
  * @return Result structure with factorial value and status
  */
-libscaffold_result_t libscaffold_factorial(int32_t n);
+scaffold_project_result_t scaffold_project_factorial(int32_t n);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* INC_LIBSCAFFOLD_H */
+#endif /* INC_SCAFFOLD_PROJECT_H */
