@@ -111,22 +111,22 @@ endif()
 # Test Executable Definition
 # ==============================================================================
 # Create test executable with all test source files
-add_executable(test_libscaffold)
+add_executable(TestScaffoldProject)
 
 # Add test source files
-target_sources(test_libscaffold
+target_sources(TestScaffoldProject
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/test_libscaffold.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_scaffold_project.c
 )
 
 # ==============================================================================
 # Test Dependencies and Libraries
 # ==============================================================================
 # Link the test executable against the library under test and Unity
-target_link_libraries(test_libscaffold
+target_link_libraries(TestScaffoldProject
     PRIVATE
         # The library we're testing (using namespace alias)
-        libscaffold::libscaffold
+        ScaffoldProject::ScaffoldProject
 
         # Unity test framework
         unity
@@ -134,7 +134,7 @@ target_link_libraries(test_libscaffold
 
 # Include Unity headers if we downloaded it via FetchContent
 if(NOT UNITY_FOUND AND NOT Unity_FOUND)
-    target_include_directories(test_libscaffold
+    target_include_directories(TestScaffoldProject
         PRIVATE
             ${unity_SOURCE_DIR}/src
     )
@@ -145,12 +145,12 @@ endif()
 # ==============================================================================
 # Register the test executable with CTest
 add_test(
-    NAME libscaffold_unit_tests
-    COMMAND test_libscaffold
+    NAME scaffold_project_unit_tests
+    COMMAND TestScaffoldProject
 )
 
 # Set test properties
-set_tests_properties(libscaffold_unit_tests
+set_tests_properties(scaffold_project_unit_tests
     PROPERTIES
         # Maximum time allowed for test execution (seconds)
         TIMEOUT 30
@@ -159,7 +159,7 @@ set_tests_properties(libscaffold_unit_tests
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 
         # Labels for organizing tests
-        LABELS "unit;libscaffold"
+        LABELS "unit;scaffold_project"
 )
 
 # ==============================================================================

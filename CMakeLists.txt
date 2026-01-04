@@ -3,7 +3,7 @@
 # ==============================================================================
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(libscaffold
+project(ScaffoldProject
     VERSION 1.0.0
     DESCRIPTION "A scaffold library for CMake projects"
     LANGUAGES C
@@ -48,17 +48,17 @@ endif()
 # Library Target Definition
 # ==============================================================================
 # Create the main library target (static or shared based on BUILD_SHARED_LIBS)
-add_library(libscaffold)
+add_library(ScaffoldProject)
 
-# Create an alias for consistent namespacing (allows using libscaffold::libscaffold)
-add_library(libscaffold::libscaffold ALIAS libscaffold)
+# Create an alias for consistent namespacing (allows using ScaffoldProject::ScaffoldProject)
+add_library(ScaffoldProject::ScaffoldProject ALIAS ScaffoldProject)
 
 # Add source files to the library target
-target_sources(libscaffold
+target_sources(ScaffoldProject
     PRIVATE
         # Core implementation files
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/libscaffold.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/libscaffold_int.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/scaffold_project.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/scaffold_project_int.c
 )
 
 # ==============================================================================
@@ -68,7 +68,7 @@ target_sources(libscaffold
 # PUBLIC: Propagated to targets linking against this library
 # BUILD_INTERFACE: Used when building the library
 # INSTALL_INTERFACE: Used when library is installed
-target_include_directories(libscaffold
+target_include_directories(ScaffoldProject
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -78,10 +78,10 @@ target_include_directories(libscaffold
 # Compiler Features and Options
 # ==============================================================================
 # Require C99 standard (public requirement propagates to consumers)
-target_compile_features(libscaffold PUBLIC c_std_99)
+target_compile_features(ScaffoldProject PUBLIC c_std_99)
 
 # Add compiler warnings (private - only when building this library)
-target_compile_options(libscaffold
+target_compile_options(ScaffoldProject
     PRIVATE
         # GCC and Clang warnings
         $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
@@ -99,7 +99,7 @@ target_compile_options(libscaffold
 # Library Properties
 # ==============================================================================
 # Set library version and symbol visibility
-set_target_properties(libscaffold
+set_target_properties(ScaffoldProject
     PROPERTIES
         # Library versioning (for shared libraries)
         VERSION ${PROJECT_VERSION}                  # Full version (e.g., 1.0.0)
@@ -110,7 +110,7 @@ set_target_properties(libscaffold
         VISIBILITY_INLINES_HIDDEN YES               # Hide inline functions
 
         # Output name (can be customized if needed)
-        OUTPUT_NAME "libscaffold"
+        OUTPUT_NAME "ScaffoldProject"
 )
 
 # ==============================================================================
@@ -122,22 +122,22 @@ set_target_properties(libscaffold
 # Example: Math library (commonly needed for mathematical functions)
 # find_library(MATH_LIBRARY m)
 # if(MATH_LIBRARY)
-#     target_link_libraries(libscaffold PUBLIC ${MATH_LIBRARY})
+#     target_link_libraries(ScaffoldProject PUBLIC ${MATH_LIBRARY})
 # endif()
 
 # Example: Threading support
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
 # find_package(Threads REQUIRED)
-# target_link_libraries(libscaffold PUBLIC Threads::Threads)
+# target_link_libraries(ScaffoldProject PUBLIC Threads::Threads)
 
 # Example: OpenSSL
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
-# target_link_libraries(libscaffold PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+# target_link_libraries(ScaffoldProject PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 
 # Example: Custom library via pkg-config
 # find_package(PkgConfig REQUIRED)
 # pkg_check_modules(SOMELIB REQUIRED IMPORTED_TARGET somelibrary>=1.0)
-# target_link_libraries(libscaffold PUBLIC PkgConfig::SOMELIB)
+# target_link_libraries(ScaffoldProject PUBLIC PkgConfig::SOMELIB)
 
 # Note: Use PUBLIC for dependencies that appear in your public headers
 #       Use PRIVATE for dependencies only used in implementation files
@@ -165,8 +165,8 @@ endif()
 # Install the library target
 # Components: Runtime (shared libs), Development (static libs, headers)
 install(
-    TARGETS libscaffold
-    EXPORT libscaffoldTargets
+    TARGETS ScaffoldProject
+    EXPORT ScaffoldProjectTargets
 
     # Shared libraries go to lib/ (Runtime component)
     LIBRARY
@@ -191,7 +191,7 @@ install(
 
 # Install public header files
 install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/libscaffold
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/scaffold_project
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT Development
     FILES_MATCHING PATTERN "*.h"
@@ -202,25 +202,25 @@ install(
 # ==============================================================================
 # Install CMake targets file (allows find_package to work)
 install(
-    EXPORT libscaffoldTargets
-    FILE libscaffoldTargets.cmake
-    NAMESPACE libscaffold::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
+    EXPORT ScaffoldProjectTargets
+    FILE ScaffoldProjectTargets.cmake
+    NAMESPACE ScaffoldProject::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ScaffoldProject
     COMPONENT Development
 )
 
 # Generate package config file from template
-# This file is used by find_package(libscaffold)
+# This file is used by find_package(ScaffoldProject)
 configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/libscaffoldConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfig.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ScaffoldProjectConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProjectConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ScaffoldProject
 )
 
 # Generate package version file
 # Ensures version compatibility when using find_package
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProjectConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion  # 1.x.x is compatible with 1.y.z
 )
@@ -228,9 +228,9 @@ write_basic_package_version_file(
 # Install the generated config files
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/libscaffoldConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscaffold
+        ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProjectConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProjectConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ScaffoldProject
     COMPONENT Development
 )
 
@@ -242,14 +242,14 @@ install(
 
 # Generate the .pc file from template
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/libscaffold.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/libscaffold.pc
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ScaffoldProject.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProject.pc
     @ONLY
 )
 
 # Install the pkg-config file
 install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/libscaffold.pc
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/ScaffoldProject.pc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
     COMPONENT Development
 )

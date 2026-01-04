@@ -24,6 +24,7 @@ NC='\033[0m' # No Color
 
 # Script configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OLD_NAME="libscaffold"
 DRY_RUN=false
 
@@ -150,16 +151,16 @@ perform_rename() {
     local new_name="$1"
 
     # Generate all case variations
-    local old_lower="libscaffold"
+    local old_lower="scaffoldproject"
     local new_lower="$(to_lower "$new_name")"
 
-    local old_snake="libscaffold"
+    local old_snake="scaffold_project"
     local new_snake="$(to_snake_case "$new_name")"
 
-    local old_pascal="LibScaffold"
+    local old_pascal="ScaffoldProject"
     local new_pascal="$(to_pascal "$new_name")"
 
-    local old_upper="LIBSCAFFOLD"
+    local old_upper="SCAFFOLD_PROJECT"
     local new_upper="$(to_upper "$(to_snake_case "$new_name")")"
 
     print_info "Renaming scaffold from 'LibScaffold' to '$new_pascal'"
@@ -195,7 +196,7 @@ perform_rename() {
     )
 
     for file in "${files_to_update[@]}"; do
-        local full_path="$SCRIPT_DIR/$file"
+        local full_path="$PROJECT_DIR/$file"
         if [ -f "$full_path" ]; then
             # Replace all variations: snake_case, PascalCase, UPPERCASE, lowercase
             rename_in_file "$full_path" "$old_snake" "$new_snake" "$old_pascal" "$new_pascal" "$old_upper" "$new_upper" "$old_lower" "$new_lower"
@@ -208,50 +209,56 @@ perform_rename() {
 
     # Step 2: Rename files (must be done before renaming directories)
     # CMake config uses lowercase for package name
-    if [ -f "$SCRIPT_DIR/cmake/${old_lower}Config.cmake.in" ]; then
+    if [ -f "$PROJECT_DIR/cmake/${old_pascal}Config.cmake.in" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/cmake/${old_lower}Config.cmake.in" \
-            "$SCRIPT_DIR/cmake/${new_lower}Config.cmake.in"
+            "$PROJECT_DIR/cmake/${old_pascal}Config.cmake.in" \
+            "$PROJECT_DIR/cmake/${new_pascal}Config.cmake.in"
+    fi
+
+    if [ -f "$PROJECT_DIR/cmake/${old_pascal}.pc.in" ]; then
+        rename_file_or_dir \
+            "$PROJECT_DIR/cmake/${old_pascal}.pc.in" \
+            "$PROJECT_DIR/cmake/${new_pascal}.pc.in"
     fi
 
     # Header files use snake_case
-    if [ -f "$SCRIPT_DIR/include/${old_snake}/${old_snake}.h" ]; then
+    if [ -f "$PROJECT_DIR/include/${old_snake}/${old_snake}.h" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_snake}/${old_snake}.h" \
-            "$SCRIPT_DIR/include/${old_snake}/${new_snake}.h"
+            "$PROJECT_DIR/include/${old_snake}/${old_snake}.h" \
+            "$PROJECT_DIR/include/${old_snake}/${new_snake}.h"
     fi
 
-    if [ -f "$SCRIPT_DIR/include/${old_snake}/${old_snake}_types.h" ]; then
+    if [ -f "$PROJECT_DIR/include/${old_snake}/${old_snake}_types.h" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_snake}/${old_snake}_types.h" \
-            "$SCRIPT_DIR/include/${old_snake}/${new_snake}_types.h"
+            "$PROJECT_DIR/include/${old_snake}/${old_snake}_types.h" \
+            "$PROJECT_DIR/include/${old_snake}/${new_snake}_types.h"
     fi
 
     # Source files use snake_case
-    if [ -f "$SCRIPT_DIR/src/${old_snake}.c" ]; then
+    if [ -f "$PROJECT_DIR/src/${old_snake}.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/src/${old_snake}.c" \
-            "$SCRIPT_DIR/src/${new_snake}.c"
+            "$PROJECT_DIR/src/${old_snake}.c" \
+            "$PROJECT_DIR/src/${new_snake}.c"
     fi
 
-    if [ -f "$SCRIPT_DIR/src/${old_snake}_int.c" ]; then
+    if [ -f "$PROJECT_DIR/src/${old_snake}_int.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/src/${old_snake}_int.c" \
-            "$SCRIPT_DIR/src/${new_snake}_int.c"
+            "$PROJECT_DIR/src/${old_snake}_int.c" \
+            "$PROJECT_DIR/src/${new_snake}_int.c"
     fi
 
     # Test files use snake_case with test_ prefix
-    if [ -f "$SCRIPT_DIR/test/test_${old_snake}.c" ]; then
+    if [ -f "$PROJECT_DIR/test/test_${old_snake}.c" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/test/test_${old_snake}.c" \
-            "$SCRIPT_DIR/test/test_${new_snake}.c"
+            "$PROJECT_DIR/test/test_${old_snake}.c" \
+            "$PROJECT_DIR/test/test_${new_snake}.c"
     fi
 
     # Step 3: Rename directories (directories use lowercase, not snake_case)
-    if [ -d "$SCRIPT_DIR/include/${old_snake}" ]; then
+    if [ -d "$PROJECT_DIR/include/${old_snake}" ]; then
         rename_file_or_dir \
-            "$SCRIPT_DIR/include/${old_snake}" \
-            "$SCRIPT_DIR/include/${new_lower}"
+            "$PROJECT_DIR/include/${old_snake}" \
+            "$PROJECT_DIR/include/${new_snake}"
     fi
     
     echo
@@ -292,7 +299,7 @@ main() {
     if [ "$DRY_RUN" = false ]; then
         echo
         print_warning "This will rename the library from 'libscaffold' to '$NEW_NAME'"
-        print_warning "This operation will modify files and directories in: $SCRIPT_DIR"
+        print_warning "This operation will modify files and directories in: $PROJECT_DIR"
         echo
         read -p "Are you sure you want to continue? (y/N) " -n 1 -r
         echo

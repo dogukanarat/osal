@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-This is **libscaffold** - a C library template/scaffold project designed to be cloned and migrated to create new C libraries. The workflow is:
+This is **scaffold_project** - a C library template/scaffold project designed to be cloned and migrated to create new C libraries. The workflow is:
 
 1. Clone this repository with a new library name
 2. Run `./scripts/migration.sh <NewLibName>` to rename all files and references (provide PascalCase name)
@@ -29,7 +29,7 @@ cmake -DBUILD_TESTS=ON ..
 make
 ctest                    # Run all tests
 ctest --verbose          # Run with detailed output
-./test_libscaffold       # Run test executable directly
+./test_scaffold_project       # Run test executable directly
 ```
 
 ### Build Shared Library
@@ -145,20 +145,20 @@ extern "C" {
 
 ### Directory Organization
 
-- **include/libscaffold/** - Public API headers (what users #include)
-  - `libscaffold.h` - Main API header
-  - `libscaffold_types.h` - Common types/definitions
+- **include/scaffold_project/** - Public API headers (what users #include)
+  - `scaffold_project.h` - Main API header
+  - `scaffold_project_types.h` - Common types/definitions
 
 - **src/** - Implementation files (not exposed to users)
-  - `libscaffold.c` - Core implementation
-  - `libscaffold_int.c` - Internal utilities (for helpers not in public API)
+  - `scaffold_project.c` - Core implementation
+  - `scaffold_project_int.c` - Internal utilities (for helpers not in public API)
 
 - **test/** - Unity test framework integration
   - Auto-downloads Unity v2.6.0 via CMake FetchContent
   - Test naming: `test_<function>_should_<behavior>_when_<condition>`
 
 - **cmake/** - CMake modules
-  - `libscaffoldConfig.cmake.in` - Package config template (enables find_package())
+  - `scaffold_projectConfig.cmake.in` - Package config template (enables find_package())
   - `FindUnity.cmake` - Unity framework finder
 
 - **scripts/** - Utility scripts
@@ -213,7 +213,7 @@ status_t longFunction(
 - Symbol visibility control for shared libraries
 - GNUInstallDirs for standard installation paths
 - Component-based installation (Runtime/Development)
-- CMake package config generation (enables `find_package(libscaffold)`)
+- CMake package config generation (enables `find_package(scaffold_project)`)
 - Version file generation for SameMajorVersion compatibility
 - Build summary output showing configuration
 - Automatic default to Release build if not specified
@@ -225,8 +225,8 @@ status_t longFunction(
 
 **Installation outputs:**
 - Libraries → `/usr/local/lib/`
-- Headers → `/usr/local/include/libscaffold/`
-- CMake config → `/usr/local/lib/cmake/libscaffold/`
+- Headers → `/usr/local/include/scaffold_project/`
+- CMake config → `/usr/local/lib/cmake/scaffold_project/`
 
 **When adding new source files**: Update `target_sources()` in CMakeLists.txt (around line 57-62).
 
@@ -243,15 +243,15 @@ Uses Unity Test Framework (ThrowTheSwitch/Unity) with intelligent fallback mecha
 3. Option to force FetchContent: `-DFORCE_FETCH_UNITY=ON`
 
 **Test properties:**
-- Test name: `libscaffold_unit_tests` (CTest)
+- Test name: `scaffold_project_unit_tests` (CTest)
 - Timeout: 30 seconds per test
-- Labels: "unit", "libscaffold"
+- Labels: "unit", "scaffold_project"
 - Test files follow structure: setUp() → tests → tearDown() → main()
 
 **Adding new test files:**
 1. Create `test/test_mymodule.c`
 2. Update `test/CMakeLists.txt`:
-   - Add to `target_sources(test_libscaffold PRIVATE test_mymodule.c)`
+   - Add to `target_sources(test_scaffold_project PRIVATE test_mymodule.c)`
    - Or create a new test executable and register with `add_test()`
 
 See `test/README.md` for comprehensive Unity assertions reference.

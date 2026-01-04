@@ -1,4 +1,4 @@
-# .clang-format for libscaffold
+# .clang-format for ScaffoldProject
 # Based on LLVM style with custom modifications
 
 BasedOnStyle: LLVM
