@@ -1,381 +1,175 @@
-/* example.c - CLI application demonstrating scaffold_project library */
+/* osal_example.c - OSAL Verification Example */
 
-/* All Rights Reserved */
-
-/*
- * This example demonstrates using the scaffold_project library with:
- * - getopt for command-line argument parsing
- * - Signal handling for graceful shutdown
- * - POSIX file I/O operations
- * - Error handling and verbose logging
- *
- * Users can easily modify this to add new commands and library function calls.
- */
-
-/* Includes */
-
-#include "scaffold_project/scaffold_project.h"
+#include "osal/osal_event_flags.h"
+#include "osal/osal_message_queue.h"
+#include "osal/osal_mutex.h"
+#include "osal/osal_semaphore.h"
+#include "osal/osal_thread.h"
+#include "osal/osal_time.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
 #include <string.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <stdint.h>
 
-/* Definitions */
+/* Objects */
+osal_mutex_handle_t Mutex;
+osal_semaphore_handle_t Sem;
+osal_message_queue_handle_t Queue;
+osal_event_flags_handle_t Flags;
 
-#define BUFFER_SIZE 256
-
-/* Types */
-
-typedef enum
+/* Thread 1: Producer */
+void thread1Func(void *arg)
 {
-    CMD_VERSION = 0,
-    CMD_ADD,
-    CMD_MULTIPLY,
-    CMD_FOO,
-    CMD_BAR,
-    CMD_FACTORIAL,
-    CMD_NONE
-} command_t;
+    (void)arg;
+    uint32_t count = 0;
 
-/* Global Variables */
+    printf("Thread 1 started\n");
 
-volatile sig_atomic_t keepRunning = 1;
-
-/* Forward Declarations */
-
-static void handleSigint(int sig);
-static void printHelp(const char *progName);
-static void printVersion(bool verbose);
-static void doAdd(int32_t a, int32_t b, bool verbose);
-static void doMultiply(int32_t a, int32_t b, bool verbose);
-static void doFoo(const char *input, bool verbose);
-static void doBar(int32_t value, bool verbose);
-static void doFactorial(int32_t n, bool verbose);
-
-/* Functions */
-
-/**
- * @brief Signal handler for SIGINT (Ctrl+C)
- */
-static void handleSigint(int sig)
-{
-    (void)sig;
-    keepRunning = 0;
-}
-
-/**
- * @brief Print usage information
- */
-static void printHelp(const char *progName)
-{
-    printf("Usage: %s [OPTIONS] <command> [arguments]\n\n", progName);
-    printf("OPTIONS:\n");
-    printf("  -v          Verbose mode (print detailed status messages)\n");
-    printf("  -h          Show this help message\n\n");
-    printf("COMMANDS:\n");
-    printf("  version                        Get library version\n");
-    printf("  add <a> <b>                    Add two numbers\n");
-    printf("  multiply <a> <b>               Multiply two numbers\n");
-    printf("  foo <string>                   Process a string\n");
-    printf("  bar <number>                   Validate a number\n");
-    printf("  factorial <n>                  Calculate factorial (0-12)\n\n");
-    printf("EXAMPLES:\n");
-    printf("  %s version\n", progName);
-    printf("  %s add 5 3\n", progName);
-    printf("  %s -v multiply 7 6\n", progName);
-    printf("  %s foo \"hello world\"\n", progName);
-    printf("  %s bar 42\n", progName);
-    printf("  %s factorial 5\n", progName);
-}
-
-/**
- * @brief Main entry point
- */
-int main(int argc, char *argv[])
-{
-    int opt;
-    bool verbose = false;
-    command_t command = CMD_NONE;
-
-    /* Setup signal handling for graceful shutdown */
-    struct sigaction sa;
-    sa.sa_handler = handleSigint;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGINT, &sa, NULL);
-
-    /* Parse command-line options using getopt */
-    while ((opt = getopt(argc, argv, "vh")) != -1)
+    while (count < 5)
     {
-        switch (opt)
+        osal_delay_ms(100);
+
+        /* Mutex test */
+        osal_mutex_lock(Mutex, OSAL_WAIT_FOREVER);
+        printf("Thread 1: Locked mutex\n");
+        osal_delay_ms(50);
+        printf("Thread 1: Unlocking mutex\n");
+        osal_mutex_unlock(Mutex);
+
+        /* Queue test */
+        printf("Thread 1: Sending %d to queue\n", count);
+        osal_message_queue_send(Queue, &count, OSAL_WAIT_FOREVER);
+
+        /* Semaphore test */
+        printf("Thread 1: Giving semaphore\n");
+        osal_semaphore_give(Sem);
+
+        /* Event flags test */
+        if (count == 4)
         {
-            case 'v':
-                verbose = true;
-                break;
-            case 'h':
-                printHelp(argv[0]);
-                return EXIT_SUCCESS;
-            default:
-                printHelp(argv[0]);
-                return EXIT_FAILURE;
+            printf("Thread 1: Setting event flag 0x01\n");
+            osal_event_flags_set(Flags, 0x01);
+        }
+
+        count++;
+    }
+
+    printf("Thread 1 finished\n");
+}
+
+/* Thread 2: Consumer */
+void thread2Func(void *arg)
+{
+    (void)arg;
+    uint32_t msg;
+    uint32_t flags;
+
+    printf("Thread 2 started\n");
+
+    for (int i = 0; i < 5; i++)
+    {
+        /* Semaphore test */
+        printf("Thread 2: Waiting for semaphore...\n");
+        osal_semaphore_take(Sem, OSAL_WAIT_FOREVER);
+        printf("Thread 2: Got semaphore\n");
+
+        /* Queue test */
+        if (osal_message_queue_receive(Queue, &msg, 1000) == OSAL_SUCCESS)
+        {
+            printf("Thread 2: Received %d from queue\n", msg);
+        }
+        else
+        {
+            printf("Thread 2: Queue receive timeout\n");
         }
     }
 
-    /* Check if command is provided */
-    if (optind >= argc)
+    /* Event flags test */
+    printf("Thread 2: Waiting for event flag 0x01...\n");
+    flags = osal_event_flags_wait(Flags, 0x01, OSAL_EVENT_WAIT_ALL, 2000);
+    if (flags & 0x01)
     {
-        fprintf(stderr, "Error: No command specified\n\n");
-        printHelp(argv[0]);
-        return EXIT_FAILURE;
-    }
-
-    /* Parse command */
-    const char *cmdStr = argv[optind];
-
-    if (strcmp(cmdStr, "version") == 0)
-    {
-        command = CMD_VERSION;
-    }
-    else if (strcmp(cmdStr, "add") == 0)
-    {
-        command = CMD_ADD;
-    }
-    else if (strcmp(cmdStr, "multiply") == 0)
-    {
-        command = CMD_MULTIPLY;
-    }
-    else if (strcmp(cmdStr, "foo") == 0)
-    {
-        command = CMD_FOO;
-    }
-    else if (strcmp(cmdStr, "bar") == 0)
-    {
-        command = CMD_BAR;
-    }
-    else if (strcmp(cmdStr, "factorial") == 0)
-    {
-        command = CMD_FACTORIAL;
+        printf("Thread 2: Got event flag 0x01\n");
     }
     else
     {
-        fprintf(stderr, "Error: Unknown command '%s'\n\n", cmdStr);
-        printHelp(argv[0]);
-        return EXIT_FAILURE;
+        printf("Thread 2: Event flag timeout\n");
     }
 
-    /* Execute command */
-    switch (command)
-    {
-        case CMD_VERSION:
-            printVersion(verbose);
-            break;
-
-        case CMD_ADD:
-            if (optind + 2 >= argc)
-            {
-                fprintf(stderr, "Error: 'add' requires two arguments\n");
-                return EXIT_FAILURE;
-            }
-            doAdd((int32_t)atoi(argv[optind + 1]), (int32_t)atoi(argv[optind + 2]), verbose);
-            break;
-
-        case CMD_MULTIPLY:
-            if (optind + 2 >= argc)
-            {
-                fprintf(stderr, "Error: 'multiply' requires two arguments\n");
-                return EXIT_FAILURE;
-            }
-            doMultiply(
-                (int32_t)atoi(argv[optind + 1]),
-                (int32_t)atoi(argv[optind + 2]),
-                verbose);
-            break;
-
-        case CMD_FOO:
-            if (optind + 1 >= argc)
-            {
-                fprintf(stderr, "Error: 'foo' requires a string argument\n");
-                return EXIT_FAILURE;
-            }
-            doFoo(argv[optind + 1], verbose);
-            break;
-
-        case CMD_BAR:
-            if (optind + 1 >= argc)
-            {
-                fprintf(stderr, "Error: 'bar' requires a number argument\n");
-                return EXIT_FAILURE;
-            }
-            doBar((int32_t)atoi(argv[optind + 1]), verbose);
-            break;
-
-        case CMD_FACTORIAL:
-            if (optind + 1 >= argc)
-            {
-                fprintf(stderr, "Error: 'factorial' requires a number argument\n");
-                return EXIT_FAILURE;
-            }
-            doFactorial((int32_t)atoi(argv[optind + 1]), verbose);
-            break;
-
-        case CMD_NONE:
-        default:
-            return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
+    printf("Thread 2 finished\n");
 }
 
-/**
- * @brief Print library version
- */
-static void printVersion(bool verbose)
+int main(void)
 {
-    if (verbose)
+    printf("OSAL Verification Example\n");
+
+    /* Create objects */
+    osal_mutex_attr_t mutex_attr = {.name = "TestMutex", .attr_bits = OSAL_MUTEX_RECURSIVE};
+    Mutex = osal_mutex_create(&mutex_attr);
+    if (!Mutex)
     {
-        const char msg[] = "Calling scaffold_project_get_version()...\n";
-        write(STDERR_FILENO, msg, sizeof(msg) - 1);
+        printf("Failed to create mutex\n");
     }
 
-    const char *version = scaffold_project_get_version();
-    printf("%s\n", version);
-
-    if (verbose)
+    osal_semaphore_attr_t semAttr = {.name = "TestSem", .max_count = 10, .initial_count = 0};
+    Sem = osal_semaphore_create(&semAttr);
+    if (!Sem)
     {
-        const char msg[] = "Version retrieved successfully\n";
-        write(STDERR_FILENO, msg, sizeof(msg) - 1);
-    }
-}
-
-/**
- * @brief Demonstrate addition function
- */
-static void doAdd(int32_t a, int32_t b, bool verbose)
-{
-    if (verbose)
-    {
-        dprintf(STDERR_FILENO, "Calling scaffold_project_add(%d, %d)...\n", a, b);
+        printf("Failed to create semaphore\n");
     }
 
-    int32_t result = scaffold_project_add(a, b);
-    printf("%d\n", result);
-
-    if (verbose)
+    osal_message_queue_attr_t queueAttr = {.name = "TestQueue"};
+    Queue = osal_message_queue_create(10, sizeof(uint32_t), &queueAttr);
+    if (!Queue)
     {
-        dprintf(STDERR_FILENO, "Result: %d + %d = %d\n", a, b, result);
-    }
-}
-
-/**
- * @brief Demonstrate multiplication with error handling
- */
-static void doMultiply(int32_t a, int32_t b, bool verbose)
-{
-    int32_t result = 0;
-
-    if (verbose)
-    {
-        dprintf(STDERR_FILENO, "Calling scaffold_project_multiply(%d, %d, &result)...\n", a, b);
+        printf("Failed to create queue\n");
     }
 
-    scaffold_project_status_t status = scaffold_project_multiply(a, b, &result);
-
-    if (status == SCAFFOLD_PROJECT_SUCCESS)
+    osal_event_flags_attr_t flagsAttr = {.name = "TestFlags"};
+    Flags = osal_event_flags_create(&flagsAttr);
+    if (!Flags)
     {
-        printf("%d\n", result);
-        if (verbose)
-        {
-            dprintf(STDERR_FILENO, "Result: %d × %d = %d (status: SUCCESS)\n", a, b, result);
-        }
-    }
-    else
-    {
-        fprintf(stderr, "Error: multiply failed with status code %d\n", status);
-        exit(EXIT_FAILURE);
-    }
-}
-
-/**
- * @brief Demonstrate string processing
- */
-static void doFoo(const char *input, bool verbose)
-{
-    char output[BUFFER_SIZE];
-
-    if (verbose)
-    {
-        dprintf(STDERR_FILENO, "Calling scaffold_project_foo(\"%s\", output, %d)...\n", input,
-                BUFFER_SIZE);
+        printf("Failed to create event flags\n");
     }
 
-    scaffold_project_status_t status = scaffold_project_foo(input, output, sizeof(output));
-
-    if (status == SCAFFOLD_PROJECT_SUCCESS)
+    /* Create threads */
+    osal_thread_attr_t t1Attr = {
+        .name = "Thread1",
+        .stack_size = 4096,
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
+    osal_thread_handle_t t1 = osal_thread_create(thread1Func, NULL, &t1Attr);
+    if (!t1)
     {
-        printf("%s\n", output);
-        if (verbose)
-        {
-            dprintf(STDERR_FILENO, "String processed successfully (status: SUCCESS)\n");
-        }
-    }
-    else
-    {
-        fprintf(stderr, "Error: foo failed with status code %d\n", status);
-        exit(EXIT_FAILURE);
-    }
-}
-
-/**
- * @brief Demonstrate validation function
- */
-static void doBar(int32_t value, bool verbose)
-{
-    if (verbose)
-    {
-        dprintf(STDERR_FILENO, "Calling scaffold_project_bar(%d)...\n", value);
+        printf("Failed to create Thread 1\n");
     }
 
-    bool isValid = scaffold_project_bar(value);
-    printf("%s\n", isValid ? "valid" : "invalid");
-
-    if (verbose)
+    osal_thread_attr_t t2Attr = {
+        .name = "Thread2",
+        .stack_size = 4096,
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
+    osal_thread_handle_t t2 = osal_thread_create(thread2Func, NULL, &t2Attr);
+    if (!t2)
     {
-        dprintf(STDERR_FILENO, "Validation result: %s\n", isValid ? "valid" : "invalid");
-    }
-}
-
-/**
- * @brief Demonstrate factorial with result structure
- */
-static void doFactorial(int32_t n, bool verbose)
-{
-    if (verbose)
-    {
-        dprintf(STDERR_FILENO, "Calling scaffold_project_factorial(%d)...\n", n);
+        printf("Failed to create Thread 2\n");
     }
 
-    scaffold_project_result_t result = scaffold_project_factorial(n);
+    /* Main thread waits */
+    osal_delay_ms(3000);
 
-    if (result.status == SCAFFOLD_PROJECT_SUCCESS)
-    {
-        printf("%d\n", result.value);
-        if (verbose)
-        {
-            dprintf(STDERR_FILENO, "Factorial: %d! = %d (status: SUCCESS)\n", n, result.value);
-        }
-    }
-    else
-    {
-        fprintf(stderr, "Error: factorial failed with status code %d\n", result.status);
-        if (result.status == SCAFFOLD_PROJECT_ERROR_INVALID)
-        {
-            fprintf(stderr, "Note: Input must be between 0 and 12\n");
-        }
-        exit(EXIT_FAILURE);
-    }
+    /* ISR API Test (Simulated) */
+    printf("Testing ISR APIs (Abstracted)...\n");
+    osal_semaphore_give(Sem);
+    uint32_t val = 123;
+    osal_message_queue_send(Queue, &val, OSAL_NO_WAIT);
+    osal_event_flags_set(Flags, 0x02);
+    printf("ISR APIs called successfully\n");
+
+    /* Clean up */
+    osal_thread_delete(t1);
+    osal_thread_delete(t2);
+    osal_mutex_delete(Mutex);
+    osal_semaphore_delete(Sem);
+    osal_message_queue_delete(Queue);
+    osal_event_flags_delete(Flags);
+
+    printf("Example finished\n");
+    return 0;
 }

@@ -1,6 +1,6 @@
 # Example Applications
 
-This directory contains example applications that demonstrate how to use the scaffold_project library with proper POSIX-compliant CLI design.
+This directory contains example applications that demonstrate how to use the osal library with proper POSIX-compliant CLI design.
 
 ## Building Examples
 
@@ -17,29 +17,29 @@ make
 After building, run the example from the build directory:
 
 ```bash
-./ScaffoldProjectExample <command> [arguments]
+./OsalExample <command> [arguments]
 ```
 
 ### Available Commands
 
 ```bash
 # Get library version
-./ScaffoldProjectExample version
+./OsalExample version
 
 # Add two numbers
-./ScaffoldProjectExample add 5 3
+./OsalExample add 5 3
 
 # Multiply two numbers (demonstrates error handling)
-./ScaffoldProjectExample multiply 7 6
+./OsalExample multiply 7 6
 
 # Process a string
-./ScaffoldProjectExample foo "hello world"
+./OsalExample foo "hello world"
 
 # Validate a number
-./ScaffoldProjectExample bar 42
+./OsalExample bar 42
 
 # Calculate factorial (must be 0-12)
-./ScaffoldProjectExample factorial 5
+./OsalExample factorial 5
 ```
 
 ### Verbose Mode
@@ -47,8 +47,8 @@ After building, run the example from the build directory:
 Use the `-v` flag to see detailed execution information:
 
 ```bash
-./ScaffoldProjectExample -v add 10 20
-# Output to stderr: Calling scaffold_project_add(10, 20)...
+./OsalExample -v add 10 20
+# Output to stderr: Calling osal_add(10, 20)...
 # Output to stdout: 30
 # Output to stderr: Result: 10 + 20 = 30
 ```
@@ -58,7 +58,7 @@ Use the `-v` flag to see detailed execution information:
 Display usage information:
 
 ```bash
-./ScaffoldProjectExample -h
+./OsalExample -h
 ```
 
 ## Understanding the Example Code
@@ -211,20 +211,20 @@ printf("  -o <file>   Write output to file\n");
 
 ### Simple Function Call (version)
 ```c
-const char *version = scaffold_project_get_version();
+const char *version = osal_get_version();
 printf("%s\n", version);
 ```
 
 ### Function with Return Value (add)
 ```c
-int32_t result = scaffold_project_add(a, b);
+int32_t result = osal_add(a, b);
 printf("%d\n", result);
 ```
 
 ### Error Handling with Status Codes (multiply)
 ```c
-scaffold_project_status_t status = scaffold_project_multiply(a, b, &result);
-if (status == SCAFFOLD_PROJECT_SUCCESS)
+osal_status_t status = osal_multiply(a, b, &result);
+if (status == OSAL_SUCCESS)
 {
     printf("%d\n", result);
 }
@@ -238,8 +238,8 @@ else
 ### String Processing with Buffers (foo)
 ```c
 char output[BUFFER_SIZE];
-scaffold_project_status_t status = scaffold_project_foo(input, output, sizeof(output));
-if (status == SCAFFOLD_PROJECT_SUCCESS)
+osal_status_t status = osal_foo(input, output, sizeof(output));
+if (status == OSAL_SUCCESS)
 {
     printf("%s\n", output);
 }
@@ -247,14 +247,14 @@ if (status == SCAFFOLD_PROJECT_SUCCESS)
 
 ### Boolean Return Values (bar)
 ```c
-bool isValid = scaffold_project_bar(value);
+bool isValid = osal_bar(value);
 printf("%s\n", isValid ? "valid" : "invalid");
 ```
 
 ### Result Structures (factorial)
 ```c
-scaffold_project_result_t result = scaffold_project_factorial(n);
-if (result.status == SCAFFOLD_PROJECT_SUCCESS)
+osal_result_t result = osal_factorial(n);
+if (result.status == OSAL_SUCCESS)
 {
     printf("%d\n", result.value);
 }
@@ -282,24 +282,24 @@ The example is designed to work well with Unix pipes and redirection:
 
 ```bash
 # Output only (stdout)
-./ScaffoldProjectExample add 5 3 > result.txt
+./OsalExample add 5 3 > result.txt
 
 # Errors only (stderr)
-./ScaffoldProjectExample add 5 3 2> errors.txt
+./OsalExample add 5 3 2> errors.txt
 
 # Verbose output to stderr, result to stdout
-./ScaffoldProjectExample -v add 5 3 2> log.txt > result.txt
+./OsalExample -v add 5 3 2> log.txt > result.txt
 
 # Chain commands
-./ScaffoldProjectExample add 5 3 | xargs ./ScaffoldProjectExample multiply 2
+./OsalExample add 5 3 | xargs ./OsalExample multiply 2
 ```
 
 ## Migration Notes
 
 After running `./scripts/migration.sh YourLibName`, the example files will be automatically updated:
 
-- `example.c` - All `scaffold_project_*` calls → `your_lib_name_*`
-- `ScaffoldProjectExample` → `example_your_lib_name_cli` (executable)
+- `example.c` - All `osal_*` calls → `your_lib_name_*`
+- `OsalExample` → `example_your_lib_name_cli` (executable)
 - Function names, types, and constants automatically renamed
 
 Make sure to:
@@ -309,7 +309,7 @@ Make sure to:
 
 ## Further Reading
 
-- `../include/scaffold_project/scaffold_project.h` - Full API documentation
+- `../include/osal/osal.h` - Full API documentation
 - `../docs/FORMATTING.md` - Code style guidelines
 - `../test/` - Unit test examples
 - `man getopt` - POSIX getopt documentation

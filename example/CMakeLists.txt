@@ -2,7 +2,7 @@
 # Example Applications
 # ==============================================================================
 # This CMakeLists.txt builds example applications that demonstrate how to use
-# the scaffold_project library.
+# the osal library.
 #
 # Users can:
 # - Add new example applications by creating new executables
@@ -13,25 +13,25 @@
 # Example: Basic CLI Application
 # ==============================================================================
 # Create the CLI example executable
-add_executable(ScaffoldProjectExample
+add_executable(OsalExample
     example.c
 )
 
-# Link with the scaffold_project library
+# Link with the osal library
 # Using the alias target ensures proper namespacing
-target_link_libraries(ScaffoldProjectExample
+target_link_libraries(OsalExample
     PRIVATE
-        ScaffoldProject::ScaffoldProject
+        Osal::Osal
 )
 
 # Set C99 standard for the example
-target_compile_features(ScaffoldProjectExample
+target_compile_features(OsalExample
     PRIVATE
         c_std_99
 )
 
 # Add compiler warnings for the example (same as library)
-target_compile_options(ScaffoldProjectExample
+target_compile_options(OsalExample
     PRIVATE
         # GCC and Clang warnings
         $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
@@ -50,16 +50,16 @@ target_compile_options(ScaffoldProjectExample
 # ==============================================================================
 # To add a new example application, copy and modify this template:
 #
-# add_executable(example_scaffold_project_myexample
+# add_executable(example_osal_myexample
 #     myexample.c
 # )
 #
-# target_link_libraries(example_scaffold_project_myexample
+# target_link_libraries(example_osal_myexample
 #     PRIVATE
-#         ScaffoldProject::ScaffoldProject
+#         Osal::Osal
 # )
 #
-# target_compile_features(example_scaffold_project_myexample
+# target_compile_features(example_osal_myexample
 #     PRIVATE
 #         c_std_99
 # )
@@ -71,7 +71,7 @@ target_compile_options(ScaffoldProjectExample
 # Uncomment the section below if you want to install example executables.
 
 # install(
-#     TARGETS ScaffoldProjectExample
+#     TARGETS OsalExample
 #     RUNTIME
 #         DESTINATION ${CMAKE_INSTALL_BINDIR}
 #         COMPONENT Examples
