@@ -169,11 +169,11 @@ cmake_minimum_required(VERSION 3.14)
 project(MyProject)
 
 # Find the installed library
-find_package(scaffold_project REQUIRED)
+find_package(ScaffoldProject REQUIRED)
 
 # Link your executable against it
 add_executable(myapp main.c)
-target_link_libraries(myapp PRIVATE scaffold_project::scaffold_project)
+target_link_libraries(myapp PRIVATE ScaffoldProject::ScaffoldProject)
 ```
 
 If installed to a custom prefix, set `CMAKE_PREFIX_PATH`:

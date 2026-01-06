@@ -6,6 +6,7 @@
 
 #include "scaffold_project/scaffold_project.h"
 #include "unity.h"
+#include <limits.h>
 #include <string.h>
 
 /* Test Setup and Teardown */
@@ -55,6 +56,18 @@ void test_add_should_return_zero_when_adding_zeros(void)
     TEST_ASSERT_EQUAL_INT32(0, result);
 }
 
+void test_add_should_saturate_on_overflow(void)
+{
+    int32_t result = scaffold_project_add(INT32_MAX, 1);
+    TEST_ASSERT_EQUAL_INT32(INT32_MAX, result);
+}
+
+void test_add_should_saturate_on_underflow(void)
+{
+    int32_t result = scaffold_project_add(INT32_MIN, -1);
+    TEST_ASSERT_EQUAL_INT32(INT32_MIN, result);
+}
+
 /* Test Cases for scaffold_projectMultiply */
 
 void test_multiply_should_return_success_when_multiplying_positive_numbers(void)
@@ -77,6 +90,20 @@ void test_multiply_should_return_error_null_when_result_pointer_is_null(void)
 {
     scaffold_project_status_t status = scaffold_project_multiply(5, 3, NULL);
     TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_ERROR_NULL, status);
+}
+
+void test_multiply_should_return_error_invalid_on_overflow(void)
+{
+    int32_t result = 0;
+    scaffold_project_status_t status = scaffold_project_multiply(INT32_MAX, 2, &result);
+    TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_ERROR_INVALID, status);
+}
+
+void test_multiply_should_return_error_invalid_on_underflow(void)
+{
+    int32_t result = 0;
+    scaffold_project_status_t status = scaffold_project_multiply(INT32_MIN, -1, &result);
+    TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_ERROR_INVALID, status);
 }
 
 /* Test Cases for scaffold_projectFoo */
@@ -112,6 +139,21 @@ void test_foo_should_return_error_invalid_when_output_size_is_zero(void)
 void test_foo_should_return_error_invalid_when_buffer_too_small(void)
 {
     char output[5];
+    scaffold_project_status_t status = scaffold_project_foo("test", output, sizeof(output));
+    TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_ERROR_INVALID, status);
+}
+
+void test_foo_should_succeed_when_buffer_exact_size(void)
+{
+    char output[16];
+    scaffold_project_status_t status = scaffold_project_foo("test", output, sizeof(output));
+    TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_SUCCESS, status);
+    TEST_ASSERT_EQUAL_STRING("Processed: test", output);
+}
+
+void test_foo_should_return_error_invalid_when_buffer_one_byte_short(void)
+{
+    char output[15];
     scaffold_project_status_t status = scaffold_project_foo("test", output, sizeof(output));
     TEST_ASSERT_EQUAL(SCAFFOLD_PROJECT_ERROR_INVALID, status);
 }
@@ -191,11 +233,15 @@ int main(void)
     RUN_TEST(test_add_should_return_sum_when_adding_negative_numbers);
     RUN_TEST(test_add_should_return_sum_when_adding_mixed_numbers);
     RUN_TEST(test_add_should_return_zero_when_adding_zeros);
+    RUN_TEST(test_add_should_saturate_on_overflow);
+    RUN_TEST(test_add_should_saturate_on_underflow);
 
     /* Multiply function tests */
     RUN_TEST(test_multiply_should_return_success_when_multiplying_positive_numbers);
     RUN_TEST(test_multiply_should_return_success_when_multiplying_by_zero);
     RUN_TEST(test_multiply_should_return_error_null_when_result_pointer_is_null);
+    RUN_TEST(test_multiply_should_return_error_invalid_on_overflow);
+    RUN_TEST(test_multiply_should_return_error_invalid_on_underflow);
 
     /* Foo function tests */
     RUN_TEST(test_foo_should_return_success_when_processing_valid_input);
@@ -203,6 +249,8 @@ int main(void)
     RUN_TEST(test_foo_should_return_error_null_when_output_is_null);
     RUN_TEST(test_foo_should_return_error_invalid_when_output_size_is_zero);
     RUN_TEST(test_foo_should_return_error_invalid_when_buffer_too_small);
+    RUN_TEST(test_foo_should_succeed_when_buffer_exact_size);
+    RUN_TEST(test_foo_should_return_error_invalid_when_buffer_one_byte_short);
 
     /* Bar function tests */
     RUN_TEST(test_bar_should_return_true_when_value_is_in_range);
@@ -218,4 +266,3 @@ int main(void)
 
     return UNITY_END();
 }
-

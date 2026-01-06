@@ -295,13 +295,13 @@ cmake_minimum_required(VERSION 3.14)
 project(MyProject)
 
 # Find the installed library
-find_package(scaffold_project REQUIRED)
+find_package(ScaffoldProject REQUIRED)
 
 # Create your executable
 add_executable(myapp main.c)
 
 # Link against the library
-target_link_libraries(myapp PRIVATE scaffold_project::scaffold_project)
+target_link_libraries(myapp PRIVATE ScaffoldProject::ScaffoldProject)
 ```
 
 ### In Your C Code
