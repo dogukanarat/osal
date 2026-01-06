@@ -169,11 +169,11 @@ cmake_minimum_required(VERSION 3.14)
 project(MyProject)
 
 # Find the installed library
-find_package(osal REQUIRED)
+find_package(Osal REQUIRED)
 
 # Link your executable against it
 add_executable(myapp main.c)
-target_link_libraries(myapp PRIVATE osal::osal)
+target_link_libraries(myapp PRIVATE Osal::Osal)
 ```
 
 If installed to a custom prefix, set `CMAKE_PREFIX_PATH`:

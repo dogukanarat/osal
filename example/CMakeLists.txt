@@ -10,7 +10,7 @@
 # - Choose whether to install examples (disabled by default)
 
 # ==============================================================================
-# Example: Basic CLI Application
+# Example: POSIX CLI Application
 # ==============================================================================
 # Create the CLI example executable
 add_executable(OsalExample

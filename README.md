@@ -295,13 +295,13 @@ cmake_minimum_required(VERSION 3.14)
 project(MyProject)
 
 # Find the installed library
-find_package(osal REQUIRED)
+find_package(Osal REQUIRED)
 
 # Create your executable
 add_executable(myapp main.c)
 
 # Link against the library
-target_link_libraries(myapp PRIVATE osal::osal)
+target_link_libraries(myapp PRIVATE Osal::Osal)
 ```
 
 ### In Your C Code

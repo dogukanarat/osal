@@ -130,6 +130,11 @@ target_compile_options(Osal
         >
 )
 
+target_compile_definitions(ScaffoldProject
+    PRIVATE
+        SCAFFOLD_PROJECT_EXPORTS
+)
+
 # ==============================================================================
 # Library Properties
 # ==============================================================================

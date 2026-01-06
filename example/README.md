@@ -12,9 +12,16 @@ cmake -DBUILD_EXAMPLES=ON ..
 make
 ```
 
-## Running the CLI Example
+## Running the Examples
 
-After building, run the example from the build directory:
+Two example targets are provided:
+
+- `ScaffoldProjectExample` (POSIX CLI): Built only on UNIX-like systems (excluding Zephyr)
+- `ScaffoldProjectEmbeddedExample` (embedded-safe): Always built and avoids POSIX APIs
+
+### POSIX CLI Example
+
+After building on a UNIX-like system, run the example from the build directory:
 
 ```bash
 ./OsalExample <command> [arguments]
@@ -63,7 +70,7 @@ Display usage information:
 
 ## Understanding the Example Code
 
-The example application (`example.c`) demonstrates professional CLI application design using POSIX standards:
+The POSIX CLI example (`example.c`) demonstrates professional CLI application design using POSIX standards:
 
 ### Code Structure
 
