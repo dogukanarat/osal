@@ -32,16 +32,16 @@ extern "C"
  *
  * @return Version string in format "major.minor.patch"
  */
-const char *scaffold_project_get_version(void);
+SCAFFOLD_PROJECT_API const char *scaffold_project_get_version(void);
 
 /**
- * @brief Add two integers
+ * @brief Add two integers with saturation on overflow/underflow
  *
  * @param a First operand
  * @param b Second operand
- * @return Sum of a and b
+ * @return Saturated sum of a and b
  */
-int32_t scaffold_project_add(int32_t a, int32_t b);
+SCAFFOLD_PROJECT_API int32_t scaffold_project_add(int32_t a, int32_t b);
 
 /**
  * @brief Multiply two integers with error handling
@@ -51,7 +51,7 @@ int32_t scaffold_project_add(int32_t a, int32_t b);
  * @param result Pointer to store result
  * @return SCAFFOLD_PROJECT_SUCCESS on success, error code otherwise
  */
-scaffold_project_status_t scaffold_project_multiply(
+SCAFFOLD_PROJECT_API scaffold_project_status_t scaffold_project_multiply(
     int32_t a,
     int32_t b,
     int32_t *result);
@@ -64,7 +64,7 @@ scaffold_project_status_t scaffold_project_multiply(
  * @param outputSize Size of output buffer
  * @return SCAFFOLD_PROJECT_SUCCESS on success, error code otherwise
  */
-scaffold_project_status_t scaffold_project_foo(
+SCAFFOLD_PROJECT_API scaffold_project_status_t scaffold_project_foo(
     const char *input,
     char *output,
     size_t outputSize);
@@ -75,7 +75,7 @@ scaffold_project_status_t scaffold_project_foo(
  * @param value Value to validate
  * @return true if valid, false otherwise
  */
-bool scaffold_project_bar(int32_t value);
+SCAFFOLD_PROJECT_API bool scaffold_project_bar(int32_t value);
 
 /**
  * @brief Compute factorial of a number
@@ -83,7 +83,7 @@ bool scaffold_project_bar(int32_t value);
  * @param n Input number (must be >= 0 and <= 12)
  * @return Result structure with factorial value and status
  */
-scaffold_project_result_t scaffold_project_factorial(int32_t n);
+SCAFFOLD_PROJECT_API scaffold_project_result_t scaffold_project_factorial(int32_t n);
 
 #ifdef __cplusplus
 }
