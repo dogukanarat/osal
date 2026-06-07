@@ -1,17 +1,17 @@
 /* test_posix.c - Comprehensive Unit Tests for OSAL POSIX */
 
+#include "osal/osal_message_queue.h"
 #include "osal/osal_mutex.h"
 #include "osal/osal_semaphore.h"
-#include "osal/osal_message_queue.h"
 #include "osal/osal_time.h"
 #include "osal/osal_types.h"
 #include "unity.h" /* */
+#include <errno.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <time.h>
-#include <semaphore.h>
-#include <pthread.h>
 
 /* --- MOCK CONTROL --- */
 static int mock_mutex_init_ret = 0;
@@ -27,7 +27,7 @@ static int mock_cond_timedwait_ret = 0;
 
 static struct timespec mock_current_time = {1000, 0};
 
-void setUp(void)
+void setUp (void)
 {
     /* Reset mocks before each test */
     mock_mutex_init_ret = 0;
@@ -44,14 +44,14 @@ void setUp(void)
     mock_current_time.tv_nsec = 0;
 }
 
-void tearDown(void)
+void tearDown (void)
 {
     /* Cleanup if needed */
 }
 
 /* --- MOCK IMPLEMENTATIONS (Wrappers) --- */
 
-int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
+int __wrap_clock_gettime (clockid_t clock_id, struct timespec *tp)
 {
     (void)clock_id;
     if (mock_clock_gettime_ret == 0)
@@ -62,7 +62,7 @@ int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
     return -1;
 }
 
-int __wrap_nanosleep(const struct timespec *req, struct timespec *rem)
+int __wrap_nanosleep (const struct timespec *req, struct timespec *rem)
 {
     (void)rem;
     mock_current_time.tv_sec += req->tv_sec;
@@ -75,31 +75,46 @@ int __wrap_nanosleep(const struct timespec *req, struct timespec *rem)
     return 0;
 }
 
-int __wrap_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
+int __wrap_pthread_mutex_init (pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
 {
-    (void)mutex; (void)attr;
+    (void)mutex;
+    (void)attr;
     return mock_mutex_init_ret;
 }
 
-int __wrap_pthread_mutex_destroy(pthread_mutex_t *mutex) { (void)mutex; return 0; }
+int __wrap_pthread_mutex_destroy (pthread_mutex_t *mutex)
+{
+    (void)mutex;
+    return 0;
+}
 
-int __wrap_pthread_mutex_lock(pthread_mutex_t *mutex)
+int __wrap_pthread_mutex_lock (pthread_mutex_t *mutex)
 {
     (void)mutex;
     return mock_mutex_lock_ret;
 }
 
-int __wrap_pthread_mutex_unlock(pthread_mutex_t *mutex) { (void)mutex; return 0; }
-
-int __wrap_sem_init(sem_t *sem, int pshared, unsigned int value)
+int __wrap_pthread_mutex_unlock (pthread_mutex_t *mutex)
 {
-    (void)sem; (void)pshared; (void)value;
+    (void)mutex;
+    return 0;
+}
+
+int __wrap_sem_init (sem_t *sem, int pshared, unsigned int value)
+{
+    (void)sem;
+    (void)pshared;
+    (void)value;
     return (mock_sem_init_ret == 0) ? 0 : -1;
 }
 
-int __wrap_sem_destroy(sem_t *sem) { (void)sem; return 0; }
+int __wrap_sem_destroy (sem_t *sem)
+{
+    (void)sem;
+    return 0;
+}
 
-int __wrap_sem_wait(sem_t *sem)
+int __wrap_sem_wait (sem_t *sem)
 {
     (void)sem;
     if (mock_sem_wait_ret != 0)
@@ -110,9 +125,10 @@ int __wrap_sem_wait(sem_t *sem)
     return 0;
 }
 
-int __wrap_sem_timedwait(sem_t *sem, const struct timespec *abs_timeout)
+int __wrap_sem_timedwait (sem_t *sem, const struct timespec *abs_timeout)
 {
-    (void)sem; (void)abs_timeout;
+    (void)sem;
+    (void)abs_timeout;
     if (mock_sem_timedwait_ret != 0)
     {
         errno = mock_sem_timedwait_ret;
@@ -121,27 +137,73 @@ int __wrap_sem_timedwait(sem_t *sem, const struct timespec *abs_timeout)
     return 0;
 }
 
-int __wrap_sem_post(sem_t *sem) { (void)sem; return 0; }
-
-int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                          void *(*start_routine) (void *), void *arg)
+int __wrap_sem_post (sem_t *sem)
 {
-    (void)thread; (void)attr; (void)start_routine; (void)arg;
+    (void)sem;
+    return 0;
+}
+
+int __wrap_pthread_create (
+    pthread_t *thread,
+    const pthread_attr_t *attr,
+    void *(*start_routine)(void *),
+    void *arg)
+{
+    (void)thread;
+    (void)attr;
+    (void)start_routine;
+    (void)arg;
     return mock_pthread_create_ret;
 }
 
-int __wrap_pthread_join(pthread_t thread, void **retval) { (void)thread; (void)retval; return 0; }
-int __wrap_pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) { (void)cond; (void)attr; return mock_cond_init_ret; }
-int __wrap_pthread_cond_destroy(pthread_cond_t *cond) { (void)cond; return 0; }
-int __wrap_pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) { (void)cond; (void)mutex; return mock_cond_wait_ret; }
-int __wrap_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime) { (void)cond; (void)mutex; (void)abstime; return mock_cond_timedwait_ret; }
-int __wrap_pthread_cond_signal(pthread_cond_t *cond) { (void)cond; return 0; }
-int __wrap_pthread_cond_broadcast(pthread_cond_t *cond) { (void)cond; return 0; }
+int __wrap_pthread_join (pthread_t thread, void **retval)
+{
+    (void)thread;
+    (void)retval;
+    return 0;
+}
+int __wrap_pthread_cond_init (pthread_cond_t *cond, const pthread_condattr_t *attr)
+{
+    (void)cond;
+    (void)attr;
+    return mock_cond_init_ret;
+}
+int __wrap_pthread_cond_destroy (pthread_cond_t *cond)
+{
+    (void)cond;
+    return 0;
+}
+int __wrap_pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex)
+{
+    (void)cond;
+    (void)mutex;
+    return mock_cond_wait_ret;
+}
+int __wrap_pthread_cond_timedwait (
+    pthread_cond_t *cond,
+    pthread_mutex_t *mutex,
+    const struct timespec *abstime)
+{
+    (void)cond;
+    (void)mutex;
+    (void)abstime;
+    return mock_cond_timedwait_ret;
+}
+int __wrap_pthread_cond_signal (pthread_cond_t *cond)
+{
+    (void)cond;
+    return 0;
+}
+int __wrap_pthread_cond_broadcast (pthread_cond_t *cond)
+{
+    (void)cond;
+    return 0;
+}
 
 
 /* --- TEST CASES --- */
 
-void test_mutex(void)
+void test_mutex (void)
 {
     /* 1. Create Success */
     osal_mutex_handle_t m = osal_mutex_create(NULL);
@@ -159,9 +221,9 @@ void test_mutex(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_mutex_delete(m));
 }
 
-void test_semaphore(void)
+void test_semaphore (void)
 {
-    osal_semaphore_attr_t attr = { .name = "Sem", .max_count = 10, .initial_count = 0 };
+    osal_semaphore_attr_t attr = {.name = "Sem", .max_count = 10, .initial_count = 0};
 
     /* 1. Create Success */
     osal_semaphore_handle_t s = osal_semaphore_create(&attr);
@@ -181,7 +243,7 @@ void test_semaphore(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_semaphore_delete(s));
 }
 
-void test_queue(void)
+void test_queue (void)
 {
     /* 1. Create Success */
     osal_message_queue_handle_t q = osal_message_queue_create(5, sizeof(int), NULL);
@@ -199,7 +261,7 @@ void test_queue(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, osal_message_queue_delete(q));
 }
 
-void test_time(void)
+void test_time (void)
 {
     /* 1. Get Tick */
     TEST_ASSERT_EQUAL_UINT32(1000000, osal_get_tick_ms());
@@ -209,7 +271,7 @@ void test_time(void)
     TEST_ASSERT_EQUAL_UINT32(1000500, osal_get_tick_ms());
 }
 
-int main(void)
+int main (void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_mutex);

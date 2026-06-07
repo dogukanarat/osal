@@ -5,8 +5,8 @@
 /* Includes */
 #include "osal/osal_semaphore.h"
 #include <zephyr/kernel.h>
-#include <time.h>
 #include <errno.h>
+#include <time.h>
 
 /* Internal Types */
 typedef struct
@@ -16,23 +16,27 @@ typedef struct
 
 /* Functions */
 
-osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
+osal_semaphore_handle_t osal_semaphore_create (const osal_semaphore_attr_t *attr)
 {
-    if (attr == NULL) {
+    if (attr == NULL)
+    {
         return NULL;
     }
 
     // Allocate memory for the semaphore wrapper
     // Note: This requires CONFIG_HEAP_MEM_POOL_SIZE to be set in prj.conf
-    osal_semaphore_control_block_t *wrapper = (osal_semaphore_control_block_t *)k_malloc(sizeof(osal_semaphore_control_block_t));
-    if (wrapper == NULL) {
+    osal_semaphore_control_block_t *wrapper = (osal_semaphore_control_block_t *)k_malloc(
+        sizeof(osal_semaphore_control_block_t));
+    if (wrapper == NULL)
+    {
         return NULL;
     }
 
     // Initialize the Zephyr semaphore
     // k_sem_init(sem, initial_count, limit)
     int ret = k_sem_init(&wrapper->sem, attr->initial_count, attr->max_count);
-    if (ret != 0) {
+    if (ret != 0)
+    {
         k_free(wrapper); // Clean up if initialization fails
         return NULL;
     }
@@ -40,9 +44,10 @@ osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
     return (osal_semaphore_handle_t)wrapper;
 }
 
-osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_delete (osal_semaphore_handle_t sem)
 {
-    if (sem == NULL) {
+    if (sem == NULL)
+    {
         return OSAL_ERROR_PARAMETER;
     }
 
@@ -52,9 +57,10 @@ osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_ms)
+osal_status_t osal_semaphore_take (osal_semaphore_handle_t sem, uint32_t timeout_ms)
 {
-    if (sem == NULL) {
+    if (sem == NULL)
+    {
         return OSAL_ERROR_PARAMETER;
     }
 
@@ -62,27 +68,36 @@ osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_
     k_timeout_t timeout;
 
     // Convert OSAL timeout to Zephyr timeout
-    if (timeout_ms == OSAL_WAIT_FOREVER) {
+    if (timeout_ms == OSAL_WAIT_FOREVER)
+    {
         timeout = K_FOREVER;
-    } else {
+    }
+    else
+    {
         timeout = K_MSEC(timeout_ms);
     }
 
     // Take the semaphore
     int ret = k_sem_take(&wrapper->sem, timeout);
 
-    if (ret == 0) {
+    if (ret == 0)
+    {
         return OSAL_SUCCESS;
-    } else if (ret == -EAGAIN) {
+    }
+    else if (ret == -EAGAIN)
+    {
         return OSAL_ERROR_TIMEOUT;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
 
-osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_give (osal_semaphore_handle_t sem)
 {
-    if (sem == NULL) {
+    if (sem == NULL)
+    {
         return OSAL_ERROR_PARAMETER;
     }
 
@@ -91,9 +106,10 @@ osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
     return OSAL_SUCCESS;
 }
 
-uint32_t osal_semaphore_get_count(osal_semaphore_handle_t sem)
+uint32_t osal_semaphore_get_count (osal_semaphore_handle_t sem)
 {
-    if (sem == NULL) {
+    if (sem == NULL)
+    {
         return 0;
     }
 

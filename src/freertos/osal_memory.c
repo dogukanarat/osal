@@ -9,12 +9,12 @@
 
 /* Functions */
 
-void *osal_memory_alloc(size_t size)
+void *osal_memory_alloc (size_t size)
 {
     return pvPortMalloc(size);
 }
 
-void osal_memory_free(void *ptr)
+void osal_memory_free (void *ptr)
 {
     vPortFree(ptr);
 }

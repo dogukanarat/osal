@@ -16,7 +16,7 @@ typedef struct
 
 /* Functions */
 
-osal_mutex_handle_t osal_mutex_create(const osal_mutex_attr_t *attr)
+osal_mutex_handle_t osal_mutex_create (const osal_mutex_attr_t *attr)
 {
     osal_mutex_control_block_t *cb;
 
@@ -55,7 +55,7 @@ osal_mutex_handle_t osal_mutex_create(const osal_mutex_attr_t *attr)
     return (osal_mutex_handle_t)cb;
 }
 
-osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex)
+osal_status_t osal_mutex_delete (osal_mutex_handle_t mutex)
 {
     osal_mutex_control_block_t *cb = (osal_mutex_control_block_t *)mutex;
 
@@ -75,7 +75,7 @@ osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_mutex_lock(osal_mutex_handle_t mutex, uint32_t timeout_ms)
+osal_status_t osal_mutex_lock (osal_mutex_handle_t mutex, uint32_t timeout_ms)
 {
     osal_mutex_control_block_t *cb = (osal_mutex_control_block_t *)mutex;
     k_timeout_t timeout;
@@ -118,7 +118,7 @@ osal_status_t osal_mutex_lock(osal_mutex_handle_t mutex, uint32_t timeout_ms)
     }
 }
 
-osal_status_t osal_mutex_unlock(osal_mutex_handle_t mutex)
+osal_status_t osal_mutex_unlock (osal_mutex_handle_t mutex)
 {
     osal_mutex_control_block_t *cb = (osal_mutex_control_block_t *)mutex;
 

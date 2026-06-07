@@ -10,7 +10,7 @@
 
 /* Functions */
 
-osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
+osal_semaphore_handle_t osal_semaphore_create (const osal_semaphore_attr_t *attr)
 {
     SemaphoreHandle_t handle = NULL;
     uint32_t max_count = 1;
@@ -24,24 +24,27 @@ osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
 
     if (attr && attr->cb_mem)
     {
-        #if (configSUPPORT_STATIC_ALLOCATION == 1)
+#if (configSUPPORT_STATIC_ALLOCATION == 1)
         if (attr->cb_size >= sizeof(StaticSemaphore_t))
         {
-            handle = xSemaphoreCreateCountingStatic(max_count, initial_count, (StaticSemaphore_t *)attr->cb_mem);
+            handle = xSemaphoreCreateCountingStatic(
+                max_count,
+                initial_count,
+                (StaticSemaphore_t *)attr->cb_mem);
         }
-        #endif
+#endif
     }
     else
     {
-        #if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
+#if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
         handle = xSemaphoreCreateCounting(max_count, initial_count);
-        #endif
+#endif
     }
 
     return (osal_semaphore_handle_t)handle;
 }
 
-osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_delete (osal_semaphore_handle_t sem)
 {
     if (sem == NULL)
     {
@@ -52,7 +55,7 @@ osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_ms)
+osal_status_t osal_semaphore_take (osal_semaphore_handle_t sem, uint32_t timeout_ms)
 {
     TickType_t ticks;
 
@@ -84,7 +87,7 @@ osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_
     }
 }
 
-osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_give (osal_semaphore_handle_t sem)
 {
     if (sem == NULL)
     {
@@ -117,7 +120,7 @@ osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
     }
 }
 
-uint32_t osal_semaphore_get_count(osal_semaphore_handle_t sem)
+uint32_t osal_semaphore_get_count (osal_semaphore_handle_t sem)
 {
     if (sem == NULL)
     {
@@ -126,7 +129,7 @@ uint32_t osal_semaphore_get_count(osal_semaphore_handle_t sem)
 
     if (xPortIsInsideInterrupt())
     {
-         return (uint32_t)uxSemaphoreGetCountFromISR((SemaphoreHandle_t)sem);
+        return (uint32_t)uxSemaphoreGetCountFromISR((SemaphoreHandle_t)sem);
     }
     else
     {

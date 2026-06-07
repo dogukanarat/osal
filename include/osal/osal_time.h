@@ -6,7 +6,8 @@
 #define INC_OSAL_TIME_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes */
@@ -33,20 +34,20 @@ typedef struct
  * @brief Delay execution for a specified number of milliseconds.
  * @param ms Milliseconds to delay.
  */
-void osal_delay_ms(uint32_t ms);
+void osal_delay_ms (uint32_t ms);
 
 /**
  * @brief Get the current system tick in milliseconds.
  * @return Current system tick.
  */
-uint32_t osal_get_tick_ms(void);
+uint32_t osal_get_tick_ms (void);
 
 /**
  * @brief Get current Unix time.
  * @param tv Pointer to time value structure to store result.
  * @return OSAL_SUCCESS on success, error code otherwise.
  */
-osal_status_t osal_get_unix_time(osal_time_val_t *tv);
+osal_status_t osal_get_unix_time (osal_time_val_t *tv);
 
 #ifdef __cplusplus
 }

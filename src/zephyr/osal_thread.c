@@ -6,23 +6,23 @@
 #include <osal/osal_thread.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Internal Types */
 typedef struct
 {
-    struct k_thread thread;    /* Zephyr thread object */
-    osal_thread_func_t func;     /* User function */
-    void *arg;                 /* User argument */
-    void *allocated_stack;     /* Pointer to malloc'd stack (to free later) */
-    bool is_static;             /* Flag for static memory management */
+    struct k_thread thread;  /* Zephyr thread object */
+    osal_thread_func_t func; /* User function */
+    void *arg;               /* User argument */
+    void *allocated_stack;   /* Pointer to malloc'd stack (to free later) */
+    bool is_static;          /* Flag for static memory management */
 } osal_thread_control_block_t;
 
 /* * Zephyr Entry Point Wrapper
  * Adapts the 3-argument Zephyr entry to the 1-argument OSAL entry.
  */
-static void thread_wrapper(void *p1, void *p2, void *p3)
+static void thread_wrapper (void *p1, void *p2, void *p3)
 {
     osal_thread_control_block_t *cb = (osal_thread_control_block_t *)p1;
 
@@ -37,7 +37,10 @@ static void thread_wrapper(void *p1, void *p2, void *p3)
 
 /* Functions */
 
-osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, const osal_thread_attr_t *attr)
+osal_thread_handle_t osal_thread_create (
+    osal_thread_func_t func,
+    void *arg,
+    const osal_thread_attr_t *attr)
 {
     osal_thread_control_block_t *cb;
     k_thread_stack_t *stack;
@@ -93,12 +96,14 @@ osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, cons
     {
         /* Dynamic stack - Must be aligned to Z_KERNEL_STACK_OBJ_ALIGN */
         /* Note: k_aligned_alloc is required for stacks */
-        cb->allocated_stack = k_aligned_alloc(Z_KERNEL_STACK_OBJ_ALIGN,
-                                              Z_KERNEL_STACK_SIZE_ADJUST(requested_size));
+        cb->allocated_stack = k_aligned_alloc(
+            Z_KERNEL_STACK_OBJ_ALIGN,
+            Z_KERNEL_STACK_SIZE_ADJUST(requested_size));
 
         if (cb->allocated_stack == NULL)
         {
-            if (!cb->is_static) k_free(cb);
+            if (!cb->is_static)
+                k_free(cb);
             return NULL;
         }
         stack = (k_thread_stack_t *)cb->allocated_stack;
@@ -113,13 +118,21 @@ osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, cons
        You may need to adjust this map based on your system design. */
     if (attr)
     {
-        switch(attr->priority)
+        switch (attr->priority)
         {
-            case OSAL_THREAD_PRIORITY_REALTIME: priority = K_PRIO_PREEMPT(1);  break;
-            case OSAL_THREAD_PRIORITY_HIGH:     priority = K_PRIO_PREEMPT(5);  break;
-            case OSAL_THREAD_PRIORITY_LOW:      priority = K_PRIO_PREEMPT(15); break;
-            case OSAL_THREAD_PRIORITY_NORMAL:
-            default:                            priority = K_PRIO_PREEMPT(10); break;
+        case OSAL_THREAD_PRIORITY_REALTIME:
+            priority = K_PRIO_PREEMPT(1);
+            break;
+        case OSAL_THREAD_PRIORITY_HIGH:
+            priority = K_PRIO_PREEMPT(5);
+            break;
+        case OSAL_THREAD_PRIORITY_LOW:
+            priority = K_PRIO_PREEMPT(15);
+            break;
+        case OSAL_THREAD_PRIORITY_NORMAL:
+        default:
+            priority = K_PRIO_PREEMPT(10);
+            break;
         }
     }
     else
@@ -130,12 +143,17 @@ osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, cons
     /* ----------------------------------------------------------------
      * 4. Thread Creation
      * ---------------------------------------------------------------- */
-    k_tid_t tid = k_thread_create(&cb->thread,
-                                  stack, stack_size,
-                                  thread_wrapper,
-                                  cb, NULL, NULL, /* Pass CB as p1 */
-                                  priority,
-                                  0, K_NO_WAIT);
+    k_tid_t tid = k_thread_create(
+        &cb->thread,
+        stack,
+        stack_size,
+        thread_wrapper,
+        cb,
+        NULL,
+        NULL, /* Pass CB as p1 */
+        priority,
+        0,
+        K_NO_WAIT);
 
     /* Set name if available (Requires CONFIG_THREAD_NAME=y) */
     if (attr && attr->name)
@@ -146,7 +164,7 @@ osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, cons
     return (osal_thread_handle_t)cb;
 }
 
-osal_status_t osal_thread_delete(osal_thread_handle_t thread)
+osal_status_t osal_thread_delete (osal_thread_handle_t thread)
 {
     osal_thread_control_block_t *cb = (osal_thread_control_block_t *)thread;
     osal_thread_control_block_t *self = (osal_thread_control_block_t *)osal_thread_get_id();
@@ -156,7 +174,8 @@ osal_status_t osal_thread_delete(osal_thread_handle_t thread)
         cb = self;
     }
 
-    if (cb == NULL) return OSAL_ERROR_PARAMETER;
+    if (cb == NULL)
+        return OSAL_ERROR_PARAMETER;
 
     /* Abort the target thread */
     k_thread_abort(&cb->thread);
@@ -177,12 +196,12 @@ osal_status_t osal_thread_delete(osal_thread_handle_t thread)
     return OSAL_SUCCESS;
 }
 
-void osal_thread_yield(void)
+void osal_thread_yield (void)
 {
     k_yield();
 }
 
-osal_thread_handle_t osal_thread_get_id(void)
+osal_thread_handle_t osal_thread_get_id (void)
 {
     /* * Requires CONFIG_THREAD_CUSTOM_DATA=y in prj.conf
      * This retrieves the pointer we stored in thread_wrapper.
@@ -190,7 +209,7 @@ osal_thread_handle_t osal_thread_get_id(void)
     return (osal_thread_handle_t)k_thread_custom_data_get();
 }
 
-osal_status_t osal_thread_join(osal_thread_handle_t thread)
+osal_status_t osal_thread_join (osal_thread_handle_t thread)
 {
     /* Zephyr does not support joining threads directly.
        Threads must be designed to signal completion via other means (e.g., semaphores).

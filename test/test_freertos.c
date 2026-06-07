@@ -1,8 +1,8 @@
 /* test_freertos.c - Unit Tests for OSAL FreeRTOS */
 
+#include "osal/osal_message_queue.h"
 #include "osal/osal_mutex.h"
 #include "osal/osal_semaphore.h"
-#include "osal/osal_message_queue.h"
 #include "osal/osal_time.h"
 #include "osal/osal_types.h"
 #include "unity/unity.h"
@@ -14,7 +14,7 @@ extern int mock_rtos_fail_take;
 extern int mock_rtos_fail_give;
 extern int mock_rtos_inside_isr;
 
-void reset_mocks(void)
+void reset_mocks (void)
 {
     mock_rtos_fail_create = 0;
     mock_rtos_fail_take = 0;
@@ -22,7 +22,7 @@ void reset_mocks(void)
     mock_rtos_inside_isr = 0;
 }
 
-void test_mutex(void)
+void test_mutex (void)
 {
     printf("[FreeRTOS Mutex] Running tests...\n");
     reset_mocks();
@@ -41,7 +41,7 @@ void test_mutex(void)
     printf("[FreeRTOS Mutex] Passed\n");
 }
 
-void test_isr_detection(void)
+void test_isr_detection (void)
 {
     printf("[FreeRTOS ISR] Running tests...\n");
     reset_mocks();
@@ -61,7 +61,7 @@ void test_isr_detection(void)
     printf("[FreeRTOS ISR] Passed\n");
 }
 
-int main(void)
+int main (void)
 {
     UNITY_BEGIN();
 

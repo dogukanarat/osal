@@ -10,22 +10,22 @@
 
 /* Functions */
 
-void osal_delay_ms(uint32_t ms)
+void osal_delay_ms (uint32_t ms)
 {
     vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
-uint32_t osal_get_tick_ms(void)
+uint32_t osal_get_tick_ms (void)
 {
     return (uint32_t)(xTaskGetTickCount() * portTICK_PERIOD_MS);
 }
 
-osal_status_t osal_get_unix_time(osal_time_val_t *tv)
+osal_status_t osal_get_unix_time (osal_time_val_t *tv)
 {
     /* FreeRTOS doesn't have a standard RTC.
        Users should implement a hook or provide a weak function.
     */
-    extern uint32_t osal_get_unix_timeHook(osal_time_val_t *tv) __attribute__((weak));
+    extern uint32_t osal_get_unix_timeHook(osal_time_val_t * tv) __attribute__((weak));
 
     if (tv == NULL)
     {

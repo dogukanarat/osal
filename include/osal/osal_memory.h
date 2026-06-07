@@ -10,7 +10,8 @@
 #include "osal_types.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 
@@ -31,14 +32,14 @@ extern "C" {
  * @param size
  * @return void*
  */
-extern void *osal_memory_alloc(size_t size);
+extern void *osal_memory_alloc (size_t size);
 
 /**
  * @brief Frees previously allocated memory.
  *
  * @param ptr
  */
-extern void osal_memory_free(void *ptr);
+extern void osal_memory_free (void *ptr);
 
 #ifdef __cplusplus
 }

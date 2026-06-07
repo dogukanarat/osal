@@ -5,10 +5,10 @@
 /* Includes */
 #include "osal/osal_thread.h"
 #include <pthread.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <sched.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /* Internal Types */
 typedef struct
@@ -24,13 +24,13 @@ typedef struct
 static pthread_key_t g_osal_thread_key;
 static pthread_once_t g_osal_key_once = PTHREAD_ONCE_INIT;
 
-static void init_thread_key(void)
+static void init_thread_key (void)
 {
     pthread_key_create(&g_osal_thread_key, NULL);
 }
 
 /* Internal wrapper to match pthread signature */
-static void *thread_wrapper(void *arg)
+static void *thread_wrapper (void *arg)
 {
     osal_thread_control_block_t *cb = (osal_thread_control_block_t *)arg;
 
@@ -53,7 +53,10 @@ static void *thread_wrapper(void *arg)
 
 /* Functions */
 
-osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, const osal_thread_attr_t *attr)
+osal_thread_handle_t osal_thread_create (
+    osal_thread_func_t func,
+    void *arg,
+    const osal_thread_attr_t *attr)
 {
     osal_thread_control_block_t *cb;
     pthread_attr_t thread_attr;
@@ -121,7 +124,7 @@ osal_thread_handle_t osal_thread_create(osal_thread_func_t func, void *arg, cons
     return (osal_thread_handle_t)cb;
 }
 
-osal_status_t osal_thread_delete(osal_thread_handle_t thread)
+osal_status_t osal_thread_delete (osal_thread_handle_t thread)
 {
     osal_thread_control_block_t *cb = (osal_thread_control_block_t *)thread;
 
@@ -146,18 +149,18 @@ osal_status_t osal_thread_delete(osal_thread_handle_t thread)
     return OSAL_SUCCESS;
 }
 
-void osal_thread_yield(void)
+void osal_thread_yield (void)
 {
     sched_yield();
 }
 
-osal_thread_handle_t osal_thread_get_id(void)
+osal_thread_handle_t osal_thread_get_id (void)
 {
     pthread_once(&g_osal_key_once, init_thread_key);
     return (osal_thread_handle_t)pthread_getspecific(g_osal_thread_key);
 }
 
-osal_status_t osal_thread_join(osal_thread_handle_t thread)
+osal_status_t osal_thread_join (osal_thread_handle_t thread)
 {
     osal_thread_control_block_t *cb = (osal_thread_control_block_t *)thread;
 

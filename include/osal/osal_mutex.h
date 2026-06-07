@@ -6,7 +6,8 @@
 #define INC_OSAL_MUTEX_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes */
@@ -27,9 +28,9 @@ extern "C" {
 typedef struct
 {
     const char *name;   ///< Name of the mutex
-    uint32_t attr_bits;  ///< Attribute bits (e.g. OSAL_MUTEX_RECURSIVE)
-    void *cb_mem;        ///< Memory for control block (optional, for static allocation)
-    uint32_t cb_size;    ///< Size of control block memory
+    uint32_t attr_bits; ///< Attribute bits (e.g. OSAL_MUTEX_RECURSIVE)
+    void *cb_mem;       ///< Memory for control block (optional, for static allocation)
+    uint32_t cb_size;   ///< Size of control block memory
 } osal_mutex_attr_t;
 
 typedef void *osal_mutex_handle_t;
@@ -41,14 +42,14 @@ typedef void *osal_mutex_handle_t;
  * @param attr Mutex attributes (optional).
  * @return Handle to the created mutex, or NULL on failure.
  */
-osal_mutex_handle_t osal_mutex_create(const osal_mutex_attr_t *attr);
+osal_mutex_handle_t osal_mutex_create (const osal_mutex_attr_t *attr);
 
 /**
  * @brief Delete a mutex.
  * @param mutex Handle to the mutex.
  * @return OSAL_SUCCESS on success.
  */
-osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex);
+osal_status_t osal_mutex_delete (osal_mutex_handle_t mutex);
 
 /**
  * @brief Acquire a mutex.
@@ -56,14 +57,14 @@ osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex);
  * @param timeout_ms Timeout in milliseconds.
  * @return OSAL_SUCCESS on success, OSAL_ERROR_TIMEOUT on timeout.
  */
-osal_status_t osal_mutex_lock(osal_mutex_handle_t mutex, uint32_t timeout_ms);
+osal_status_t osal_mutex_lock (osal_mutex_handle_t mutex, uint32_t timeout_ms);
 
 /**
  * @brief Release a mutex.
  * @param mutex Handle to the mutex.
  * @return OSAL_SUCCESS on success.
  */
-osal_status_t osal_mutex_unlock(osal_mutex_handle_t mutex);
+osal_status_t osal_mutex_unlock (osal_mutex_handle_t mutex);
 
 #ifdef __cplusplus
 }

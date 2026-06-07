@@ -10,30 +10,30 @@
 
 /* Functions */
 
-osal_mutex_handle_t osal_mutex_create(const osal_mutex_attr_t *attr)
+osal_mutex_handle_t osal_mutex_create (const osal_mutex_attr_t *attr)
 {
     SemaphoreHandle_t handle = NULL;
 
     if (attr && attr->cb_mem)
     {
-        #if (configSUPPORT_STATIC_ALLOCATION == 1)
+#if (configSUPPORT_STATIC_ALLOCATION == 1)
         if (attr->cb_size >= sizeof(StaticSemaphore_t))
         {
             handle = xSemaphoreCreateRecursiveMutexStatic((StaticSemaphore_t *)attr->cb_mem);
         }
-        #endif
+#endif
     }
     else
     {
-        #if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
+#if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
         handle = xSemaphoreCreateRecursiveMutex();
-        #endif
+#endif
     }
 
     return (osal_mutex_handle_t)handle;
 }
 
-osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex)
+osal_status_t osal_mutex_delete (osal_mutex_handle_t mutex)
 {
     if (mutex == NULL)
     {
@@ -44,7 +44,7 @@ osal_status_t osal_mutex_delete(osal_mutex_handle_t mutex)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_mutex_lock(osal_mutex_handle_t mutex, uint32_t timeout_ms)
+osal_status_t osal_mutex_lock (osal_mutex_handle_t mutex, uint32_t timeout_ms)
 {
     TickType_t ticks;
 
@@ -76,7 +76,7 @@ osal_status_t osal_mutex_lock(osal_mutex_handle_t mutex, uint32_t timeout_ms)
     }
 }
 
-osal_status_t osal_mutex_unlock(osal_mutex_handle_t mutex)
+osal_status_t osal_mutex_unlock (osal_mutex_handle_t mutex)
 {
     if (mutex == NULL)
     {

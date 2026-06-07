@@ -11,9 +11,9 @@ extern "C"
 #endif
 
 /* Includes */
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 /* Configurations */
 

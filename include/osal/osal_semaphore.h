@@ -6,7 +6,8 @@
 #define INC_OSAL_SEMAPHORE_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes */
@@ -22,7 +23,7 @@ extern "C" {
  */
 typedef struct
 {
-    const char *name;      ///< Name of the semaphore
+    const char *name;       ///< Name of the semaphore
     uint32_t max_count;     ///< Maximum count
     uint32_t initial_count; ///< Initial count
     void *cb_mem;           ///< Memory for control block (optional)
@@ -38,14 +39,14 @@ typedef void *osal_semaphore_handle_t;
  * @param attr Semaphore attributes (optional).
  * @return Handle to the created semaphore, or NULL on failure.
  */
-osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr);
+osal_semaphore_handle_t osal_semaphore_create (const osal_semaphore_attr_t *attr);
 
 /**
  * @brief Delete a semaphore.
  * @param sem Handle to the semaphore.
  * @return OSAL_SUCCESS on success.
  */
-osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem);
+osal_status_t osal_semaphore_delete (osal_semaphore_handle_t sem);
 
 /**
  * @brief Acquire (take) a semaphore.
@@ -53,21 +54,21 @@ osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem);
  * @param timeout_ms Timeout in milliseconds.
  * @return OSAL_SUCCESS on success, OSAL_ERROR_TIMEOUT on timeout.
  */
-osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_ms);
+osal_status_t osal_semaphore_take (osal_semaphore_handle_t sem, uint32_t timeout_ms);
 
 /**
  * @brief Give (signal) a semaphore.
  * @param sem Handle to the semaphore.
  * @return OSAL_SUCCESS on success.
  */
-osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem);
+osal_status_t osal_semaphore_give (osal_semaphore_handle_t sem);
 
 /**
  * @brief Get current semaphore count.
  * @param sem Handle to the semaphore.
  * @return Current count.
  */
-uint32_t osal_semaphore_get_count(osal_semaphore_handle_t sem);
+uint32_t osal_semaphore_get_count (osal_semaphore_handle_t sem);
 
 #ifdef __cplusplus
 }

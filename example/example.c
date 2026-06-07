@@ -16,7 +16,7 @@ osal_message_queue_handle_t Queue;
 osal_event_flags_handle_t Flags;
 
 /* Thread 1: Producer */
-void thread1Func(void *arg)
+void thread1Func (void *arg)
 {
     (void)arg;
     uint32_t count = 0;
@@ -56,7 +56,7 @@ void thread1Func(void *arg)
 }
 
 /* Thread 2: Consumer */
-void thread2Func(void *arg)
+void thread2Func (void *arg)
 {
     (void)arg;
     uint32_t msg;
@@ -97,7 +97,7 @@ void thread2Func(void *arg)
     printf("Thread 2 finished\n");
 }
 
-int main(void)
+int main (void)
 {
     printf("OSAL Verification Example\n");
 

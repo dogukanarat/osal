@@ -6,22 +6,25 @@
 #include "osal/osal_time.h"
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Functions */
 
-void osal_delay_ms(uint32_t ms) {
+void osal_delay_ms (uint32_t ms)
+{
     k_msleep(ms);
 }
 
-uint32_t osal_get_tick_ms(void) {
+uint32_t osal_get_tick_ms (void)
+{
     return (uint32_t)k_uptime_get();
 }
 
-osal_status_t osal_get_unix_time(osal_time_val_t *tv)
+osal_status_t osal_get_unix_time (osal_time_val_t *tv)
 {
-    if (tv == NULL) {
+    if (tv == NULL)
+    {
         return OSAL_ERROR_PARAMETER;
     }
 

@@ -11,15 +11,18 @@
 /* Internal Types */
 typedef struct
 {
-    struct k_msgq msgq;    /* Zephyr native message queue */
-    void *buffer;          /* Pointer to the buffer memory */
-    bool is_static_cb;       /* Flag: Was the CB provided by user? */
-    bool is_static_buf;      /* Flag: Was the buffer provided by user? */
+    struct k_msgq msgq; /* Zephyr native message queue */
+    void *buffer;       /* Pointer to the buffer memory */
+    bool is_static_cb;  /* Flag: Was the CB provided by user? */
+    bool is_static_buf; /* Flag: Was the buffer provided by user? */
 } osalMessageQueueControlBlock_t;
 
 /* Functions */
 
-osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t item_size, const osal_message_queue_attr_t *attr)
+osal_message_queue_handle_t osal_message_queue_create (
+    uint32_t depth,
+    uint32_t item_size,
+    const osal_message_queue_attr_t *attr)
 {
     osalMessageQueueControlBlock_t *cb;
     void *buffer;
@@ -66,7 +69,8 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
         /* Static Buffer */
         if (attr->mq_size < totalBufferSize)
         {
-            if (!cb->is_static_cb) k_free(cb);
+            if (!cb->is_static_cb)
+                k_free(cb);
             return NULL;
         }
         buffer = attr->mq_mem;
@@ -79,7 +83,8 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
         buffer = k_aligned_alloc(4, totalBufferSize); // 4-byte alignment
         if (buffer == NULL)
         {
-            if (!cb->is_static_cb) k_free(cb);
+            if (!cb->is_static_cb)
+                k_free(cb);
             return NULL;
         }
         cb->is_static_buf = false;
@@ -95,7 +100,7 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
     return (osal_message_queue_handle_t)cb;
 }
 
-osal_status_t osal_message_queue_delete(osal_message_queue_handle_t queue)
+osal_status_t osal_message_queue_delete (osal_message_queue_handle_t queue)
 {
     osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 
@@ -122,7 +127,10 @@ osal_status_t osal_message_queue_delete(osal_message_queue_handle_t queue)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_message_queue_send(osal_message_queue_handle_t queue, const void *item, uint32_t timeout_ms)
+osal_status_t osal_message_queue_send (
+    osal_message_queue_handle_t queue,
+    const void *item,
+    uint32_t timeout_ms)
 {
     osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
     k_timeout_t timeout;
@@ -164,7 +172,10 @@ osal_status_t osal_message_queue_send(osal_message_queue_handle_t queue, const v
     }
 }
 
-osal_status_t osal_message_queue_receive(osal_message_queue_handle_t queue, void *item, uint32_t timeout_ms)
+osal_status_t osal_message_queue_receive (
+    osal_message_queue_handle_t queue,
+    void *item,
+    uint32_t timeout_ms)
 {
     osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
     k_timeout_t timeout;
@@ -206,7 +217,7 @@ osal_status_t osal_message_queue_receive(osal_message_queue_handle_t queue, void
     }
 }
 
-uint32_t osal_message_queue_get_count(osal_message_queue_handle_t queue)
+uint32_t osal_message_queue_get_count (osal_message_queue_handle_t queue)
 {
     osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 
@@ -218,7 +229,7 @@ uint32_t osal_message_queue_get_count(osal_message_queue_handle_t queue)
     return k_msgq_num_used_get(&cb->msgq);
 }
 
-osal_status_t osal_message_queue_reset(osal_message_queue_handle_t queue)
+osal_status_t osal_message_queue_reset (osal_message_queue_handle_t queue)
 {
     osalMessageQueueControlBlock_t *cb = (osalMessageQueueControlBlock_t *)queue;
 

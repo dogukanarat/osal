@@ -4,11 +4,11 @@
 
 /* Includes */
 #include "osal/osal_message_queue.h"
+#include <errno.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <errno.h>
 
 /* Internal Types */
 typedef struct
@@ -28,7 +28,10 @@ typedef struct
 
 /* Functions */
 
-osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t item_size, const osal_message_queue_attr_t *attr)
+osal_message_queue_handle_t osal_message_queue_create (
+    uint32_t depth,
+    uint32_t item_size,
+    const osal_message_queue_attr_t *attr)
 {
     osal_queue_control_block_t *cb;
     uint8_t *buffer;
@@ -63,7 +66,8 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
     {
         if (attr->mq_size < (depth * item_size))
         {
-            if (!cb->is_static_cb) free(cb);
+            if (!cb->is_static_cb)
+                free(cb);
             return NULL;
         }
         buffer = (uint8_t *)attr->mq_mem;
@@ -74,7 +78,8 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
         buffer = (uint8_t *)malloc(depth * item_size);
         if (buffer == NULL)
         {
-            if (!cb->is_static_cb) free(cb);
+            if (!cb->is_static_cb)
+                free(cb);
             return NULL;
         }
         cb->is_static_buf = false;
@@ -95,7 +100,7 @@ osal_message_queue_handle_t osal_message_queue_create(uint32_t depth, uint32_t i
     return (osal_message_queue_handle_t)cb;
 }
 
-osal_status_t osal_message_queue_delete(osal_message_queue_handle_t queue)
+osal_status_t osal_message_queue_delete (osal_message_queue_handle_t queue)
 {
     osal_queue_control_block_t *cb = (osal_queue_control_block_t *)queue;
 
@@ -121,7 +126,10 @@ osal_status_t osal_message_queue_delete(osal_message_queue_handle_t queue)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_message_queue_send(osal_message_queue_handle_t queue, const void *item, uint32_t timeout_ms)
+osal_status_t osal_message_queue_send (
+    osal_message_queue_handle_t queue,
+    const void *item,
+    uint32_t timeout_ms)
 {
     osal_queue_control_block_t *cb = (osal_queue_control_block_t *)queue;
     struct timespec ts;
@@ -174,7 +182,10 @@ osal_status_t osal_message_queue_send(osal_message_queue_handle_t queue, const v
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_message_queue_receive(osal_message_queue_handle_t queue, void *item, uint32_t timeout_ms)
+osal_status_t osal_message_queue_receive (
+    osal_message_queue_handle_t queue,
+    void *item,
+    uint32_t timeout_ms)
 {
     osal_queue_control_block_t *cb = (osal_queue_control_block_t *)queue;
     struct timespec ts;
@@ -227,7 +238,7 @@ osal_status_t osal_message_queue_receive(osal_message_queue_handle_t queue, void
     return OSAL_SUCCESS;
 }
 
-uint32_t osal_message_queue_get_count(osal_message_queue_handle_t queue)
+uint32_t osal_message_queue_get_count (osal_message_queue_handle_t queue)
 {
     osal_queue_control_block_t *cb = (osal_queue_control_block_t *)queue;
     uint32_t count;
@@ -244,7 +255,7 @@ uint32_t osal_message_queue_get_count(osal_message_queue_handle_t queue)
     return count;
 }
 
-osal_status_t osal_message_queue_reset(osal_message_queue_handle_t queue)
+osal_status_t osal_message_queue_reset (osal_message_queue_handle_t queue)
 {
     osal_queue_control_block_t *cb = (osal_queue_control_block_t *)queue;
 

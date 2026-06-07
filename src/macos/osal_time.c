@@ -15,7 +15,7 @@ static int timebase_initialized = 0;
 
 /* Functions */
 
-static void init_timebase(void)
+static void init_timebase (void)
 {
     if (!timebase_initialized)
     {
@@ -24,12 +24,12 @@ static void init_timebase(void)
     }
 }
 
-void osal_delay_ms(uint32_t ms)
+void osal_delay_ms (uint32_t ms)
 {
     usleep(ms * 1000);
 }
 
-uint32_t osal_get_tick_ms(void)
+uint32_t osal_get_tick_ms (void)
 {
     init_timebase();
 
@@ -39,7 +39,7 @@ uint32_t osal_get_tick_ms(void)
     return (uint32_t)(nanos / 1000000);
 }
 
-osal_status_t osal_get_unix_time(osal_time_val_t *tv)
+osal_status_t osal_get_unix_time (osal_time_val_t *tv)
 {
     struct timeval timeVal;
 

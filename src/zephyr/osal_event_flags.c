@@ -16,7 +16,7 @@ typedef struct
 
 /* Functions */
 
-osal_event_flags_handle_t osal_event_flags_create(const osal_event_flags_attr_t *attr)
+osal_event_flags_handle_t osal_event_flags_create (const osal_event_flags_attr_t *attr)
 {
     osal_event_flags_control_block_t *cb;
 
@@ -52,7 +52,7 @@ osal_event_flags_handle_t osal_event_flags_create(const osal_event_flags_attr_t 
     return (osal_event_flags_handle_t)cb;
 }
 
-osal_status_t osal_event_flags_delete(osal_event_flags_handle_t flags)
+osal_status_t osal_event_flags_delete (osal_event_flags_handle_t flags)
 {
     osal_event_flags_control_block_t *cb = (osal_event_flags_control_block_t *)flags;
 
@@ -72,7 +72,7 @@ osal_status_t osal_event_flags_delete(osal_event_flags_handle_t flags)
     return OSAL_SUCCESS;
 }
 
-uint32_t osal_event_flags_set(osal_event_flags_handle_t flags, uint32_t flags_to_set)
+uint32_t osal_event_flags_set (osal_event_flags_handle_t flags, uint32_t flags_to_set)
 {
     osal_event_flags_control_block_t *cb = (osal_event_flags_control_block_t *)flags;
     uint32_t previousFlags;
@@ -89,7 +89,7 @@ uint32_t osal_event_flags_set(osal_event_flags_handle_t flags, uint32_t flags_to
     return previousFlags | flags_to_set;
 }
 
-uint32_t osal_event_flags_clear(osal_event_flags_handle_t flags, uint32_t flags_to_clear)
+uint32_t osal_event_flags_clear (osal_event_flags_handle_t flags, uint32_t flags_to_clear)
 {
     osal_event_flags_control_block_t *cb = (osal_event_flags_control_block_t *)flags;
     uint32_t current_flags;
@@ -110,7 +110,11 @@ uint32_t osal_event_flags_clear(osal_event_flags_handle_t flags, uint32_t flags_
     return current_flags;
 }
 
-uint32_t osal_event_flags_wait(osal_event_flags_handle_t flags, uint32_t flags_to_wait, uint32_t options, uint32_t timeout_ms)
+uint32_t osal_event_flags_wait (
+    osal_event_flags_handle_t flags,
+    uint32_t flags_to_wait,
+    uint32_t options,
+    uint32_t timeout_ms)
 {
     osal_event_flags_control_block_t *cb = (osal_event_flags_control_block_t *)flags;
     k_timeout_t timeout;
@@ -155,7 +159,7 @@ uint32_t osal_event_flags_wait(osal_event_flags_handle_t flags, uint32_t flags_t
     return retFlags;
 }
 
-uint32_t osal_event_flags_get(osal_event_flags_handle_t flags)
+uint32_t osal_event_flags_get (osal_event_flags_handle_t flags)
 {
     osal_event_flags_control_block_t *cb = (osal_event_flags_control_block_t *)flags;
 

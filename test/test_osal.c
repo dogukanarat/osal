@@ -3,29 +3,29 @@
 /* All Rights Reserved */
 
 /* Includes */
+#include "osal/osal_event_flags.h"
 #include "osal/osal_memory.h"
-#include "osal/osal_time.h"
+#include "osal/osal_message_queue.h"
 #include "osal/osal_mutex.h"
 #include "osal/osal_semaphore.h"
-#include "osal/osal_message_queue.h"
-#include "osal/osal_event_flags.h"
 #include "osal/osal_thread.h"
+#include "osal/osal_time.h"
 #include "unity/unity.h"
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 /* Test Helpers */
-#define TEST_TIMEOUT_MS 5000
+#define TEST_TIMEOUT_MS     5000
 #define TEST_SHORT_DELAY_MS 10
-#define TEST_QUEUE_DEPTH 10
+#define TEST_QUEUE_DEPTH    10
 
 /* Unity Setup/Teardown */
-void setUp(void)
+void setUp (void)
 {
     /* Called before each test */
 }
 
-void tearDown(void)
+void tearDown (void)
 {
     /* Called after each test */
 }
@@ -34,7 +34,7 @@ void tearDown(void)
  * Memory Tests
  * ============================================================================ */
 
-void test_memory_alloc_free(void)
+void test_memory_alloc_free (void)
 {
     void *ptr = osal_memory_alloc(1024);
     TEST_ASSERT_NOT_NULL(ptr);
@@ -45,7 +45,7 @@ void test_memory_alloc_free(void)
     osal_memory_free(ptr);
 }
 
-void test_memory_multiple_allocations(void)
+void test_memory_multiple_allocations (void)
 {
     void *ptrs[10];
 
@@ -65,7 +65,7 @@ void test_memory_multiple_allocations(void)
  * Time Tests
  * ============================================================================ */
 
-void test_time_delay(void)
+void test_time_delay (void)
 {
     uint32_t start = osal_get_tick_ms();
     osal_delay_ms(50);
@@ -76,7 +76,7 @@ void test_time_delay(void)
     TEST_ASSERT_UINT32_WITHIN(20, 50, elapsed);
 }
 
-void test_time_get_tick(void)
+void test_time_get_tick (void)
 {
     uint32_t tick1 = osal_get_tick_ms();
     osal_delay_ms(10);
@@ -85,7 +85,7 @@ void test_time_get_tick(void)
     TEST_ASSERT_GREATER_THAN(tick1, tick2);
 }
 
-void test_time_get_unix_time(void)
+void test_time_get_unix_time (void)
 {
     osal_time_val_t tv;
     osal_status_t status = osal_get_unix_time(&tv);
@@ -99,7 +99,7 @@ void test_time_get_unix_time(void)
  * Mutex Tests
  * ============================================================================ */
 
-void test_mutex_create_delete(void)
+void test_mutex_create_delete (void)
 {
     osal_mutex_handle_t mutex = osal_mutex_create(NULL);
     TEST_ASSERT_NOT_NULL(mutex);
@@ -108,7 +108,7 @@ void test_mutex_create_delete(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, status);
 }
 
-void test_mutex_lock_unlock(void)
+void test_mutex_lock_unlock (void)
 {
     osal_mutex_handle_t mutex = osal_mutex_create(NULL);
     TEST_ASSERT_NOT_NULL(mutex);
@@ -122,7 +122,7 @@ void test_mutex_lock_unlock(void)
     osal_mutex_delete(mutex);
 }
 
-void test_mutex_lock_timeout(void)
+void test_mutex_lock_timeout (void)
 {
     osal_mutex_handle_t mutex = osal_mutex_create(NULL);
     TEST_ASSERT_NOT_NULL(mutex);
@@ -138,7 +138,7 @@ void test_mutex_lock_timeout(void)
 static osal_mutex_handle_t g_sharedMutex;
 static int g_sharedCounter = 0;
 
-static void mutexThreadFunc(void *arg)
+static void mutexThreadFunc (void *arg)
 {
     (void)arg;
 
@@ -150,7 +150,7 @@ static void mutexThreadFunc(void *arg)
     }
 }
 
-void test_mutex_thread_safety(void)
+void test_mutex_thread_safety (void)
 {
     g_sharedMutex = osal_mutex_create(NULL);
     TEST_ASSERT_NOT_NULL(g_sharedMutex);
@@ -159,8 +159,7 @@ void test_mutex_thread_safety(void)
     osal_thread_attr_t attr = {
         .name = "TestThread",
         .stack_size = 4096,
-        .priority = OSAL_THREAD_PRIORITY_NORMAL
-    };
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
 
     osal_thread_handle_t t1 = osal_thread_create(mutexThreadFunc, NULL, &attr);
     osal_thread_handle_t t2 = osal_thread_create(mutexThreadFunc, NULL, &attr);
@@ -183,13 +182,9 @@ void test_mutex_thread_safety(void)
  * Semaphore Tests
  * ============================================================================ */
 
-void test_semaphore_create_delete(void)
+void test_semaphore_create_delete (void)
 {
-    osal_semaphore_attr_t attr = {
-        .name = "TestSem",
-        .max_count = 10,
-        .initial_count = 5
-    };
+    osal_semaphore_attr_t attr = {.name = "TestSem", .max_count = 10, .initial_count = 5};
 
     osal_semaphore_handle_t sem = osal_semaphore_create(&attr);
     TEST_ASSERT_NOT_NULL(sem);
@@ -198,11 +193,9 @@ void test_semaphore_create_delete(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, status);
 }
 
-void test_semaphore_give_take(void)
+void test_semaphore_give_take (void)
 {
-    osal_semaphore_attr_t attr = {
-        .initial_count = 0
-    };
+    osal_semaphore_attr_t attr = {.initial_count = 0};
 
     osal_semaphore_handle_t sem = osal_semaphore_create(&attr);
     TEST_ASSERT_NOT_NULL(sem);
@@ -218,11 +211,9 @@ void test_semaphore_give_take(void)
     osal_semaphore_delete(sem);
 }
 
-void test_semaphore_timeout(void)
+void test_semaphore_timeout (void)
 {
-    osal_semaphore_attr_t attr = {
-        .initial_count = 0
-    };
+    osal_semaphore_attr_t attr = {.initial_count = 0};
 
     osal_semaphore_handle_t sem = osal_semaphore_create(&attr);
     TEST_ASSERT_NOT_NULL(sem);
@@ -240,18 +231,16 @@ void test_semaphore_timeout(void)
 
 static osal_semaphore_handle_t g_testSem;
 
-static void semProducerThread(void *arg)
+static void semProducerThread (void *arg)
 {
     (void)arg;
     osal_delay_ms(50);
     osal_semaphore_give(g_testSem);
 }
 
-void test_semaphore_thread_signaling(void)
+void test_semaphore_thread_signaling (void)
 {
-    osal_semaphore_attr_t attr = {
-        .initial_count = 0
-    };
+    osal_semaphore_attr_t attr = {.initial_count = 0};
 
     g_testSem = osal_semaphore_create(&attr);
     TEST_ASSERT_NOT_NULL(g_testSem);
@@ -259,8 +248,7 @@ void test_semaphore_thread_signaling(void)
     osal_thread_attr_t thread_attr = {
         .name = "Producer",
         .stack_size = 4096,
-        .priority = OSAL_THREAD_PRIORITY_NORMAL
-    };
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
 
     osal_thread_handle_t thread = osal_thread_create(semProducerThread, NULL, &thread_attr);
     TEST_ASSERT_NOT_NULL(thread);
@@ -281,7 +269,7 @@ void test_semaphore_thread_signaling(void)
  * Message Queue Tests
  * ============================================================================ */
 
-void test_queue_create_delete(void)
+void test_queue_create_delete (void)
 {
     osal_message_queue_handle_t queue = osal_message_queue_create(10, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(queue);
@@ -290,7 +278,7 @@ void test_queue_create_delete(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, status);
 }
 
-void test_queue_send_receive(void)
+void test_queue_send_receive (void)
 {
     osal_message_queue_handle_t queue = osal_message_queue_create(10, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(queue);
@@ -307,7 +295,7 @@ void test_queue_send_receive(void)
     osal_message_queue_delete(queue);
 }
 
-void test_queue_multiple_messages(void)
+void test_queue_multiple_messages (void)
 {
     osal_message_queue_handle_t queue = osal_message_queue_create(5, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(queue);
@@ -331,7 +319,7 @@ void test_queue_multiple_messages(void)
     osal_message_queue_delete(queue);
 }
 
-void test_queue_count(void)
+void test_queue_count (void)
 {
     osal_message_queue_handle_t queue = osal_message_queue_create(10, sizeof(int), NULL);
     TEST_ASSERT_NOT_NULL(queue);
@@ -355,7 +343,7 @@ void test_queue_count(void)
  * Event Flags Tests
  * ============================================================================ */
 
-void test_eventflags_create_delete(void)
+void test_eventflags_create_delete (void)
 {
     osal_event_flags_handle_t flags = osal_event_flags_create(NULL);
     TEST_ASSERT_NOT_NULL(flags);
@@ -364,7 +352,7 @@ void test_eventflags_create_delete(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, status);
 }
 
-void test_eventflags_set_clear(void)
+void test_eventflags_set_clear (void)
 {
     osal_event_flags_handle_t flags = osal_event_flags_create(NULL);
     TEST_ASSERT_NOT_NULL(flags);
@@ -387,7 +375,7 @@ void test_eventflags_set_clear(void)
     osal_event_flags_delete(flags);
 }
 
-void test_eventflags_wait_any(void)
+void test_eventflags_wait_any (void)
 {
     osal_event_flags_handle_t flags = osal_event_flags_create(NULL);
     TEST_ASSERT_NOT_NULL(flags);
@@ -401,7 +389,7 @@ void test_eventflags_wait_any(void)
     osal_event_flags_delete(flags);
 }
 
-void test_eventflags_wait_all(void)
+void test_eventflags_wait_all (void)
 {
     osal_event_flags_handle_t flags = osal_event_flags_create(NULL);
     TEST_ASSERT_NOT_NULL(flags);
@@ -417,14 +405,14 @@ void test_eventflags_wait_all(void)
 
 static osal_event_flags_handle_t g_testFlags;
 
-static void eventFlagSetterThread(void *arg)
+static void eventFlagSetterThread (void *arg)
 {
     (void)arg;
     osal_delay_ms(50);
     osal_event_flags_set(g_testFlags, 0x01);
 }
 
-void test_eventflags_thread_signaling(void)
+void test_eventflags_thread_signaling (void)
 {
     g_testFlags = osal_event_flags_create(NULL);
     TEST_ASSERT_NOT_NULL(g_testFlags);
@@ -432,15 +420,18 @@ void test_eventflags_thread_signaling(void)
     osal_thread_attr_t attr = {
         .name = "FlagSetter",
         .stack_size = 4096,
-        .priority = OSAL_THREAD_PRIORITY_NORMAL
-    };
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
 
     osal_thread_handle_t thread = osal_thread_create(eventFlagSetterThread, NULL, &attr);
     TEST_ASSERT_NOT_NULL(thread);
 
     /* Wait for flag to be set by thread */
     uint32_t start = osal_get_tick_ms();
-    uint32_t result = osal_event_flags_wait(g_testFlags, 0x01, OSAL_EVENT_WAIT_ANY, TEST_TIMEOUT_MS);
+    uint32_t result = osal_event_flags_wait(
+        g_testFlags,
+        0x01,
+        OSAL_EVENT_WAIT_ANY,
+        TEST_TIMEOUT_MS);
     uint32_t elapsed = osal_get_tick_ms() - start;
 
     TEST_ASSERT_EQUAL_UINT32(0x01, result);
@@ -456,21 +447,20 @@ void test_eventflags_thread_signaling(void)
 
 static volatile int g_threadExecuted = 0;
 
-static void simpleThreadFunc(void *arg)
+static void simpleThreadFunc (void *arg)
 {
     (void)arg;
     g_threadExecuted = 1;
 }
 
-void test_thread_create_delete(void)
+void test_thread_create_delete (void)
 {
     g_threadExecuted = 0;
 
     osal_thread_attr_t attr = {
         .name = "TestThread",
         .stack_size = 4096,
-        .priority = OSAL_THREAD_PRIORITY_NORMAL
-    };
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
 
     osal_thread_handle_t thread = osal_thread_create(simpleThreadFunc, NULL, &attr);
     TEST_ASSERT_NOT_NULL(thread);
@@ -482,7 +472,7 @@ void test_thread_create_delete(void)
     TEST_ASSERT_EQUAL(OSAL_SUCCESS, status);
 }
 
-static void yieldThreadFunc(void *arg)
+static void yieldThreadFunc (void *arg)
 {
     (void)arg;
     for (int i = 0; i < 10; i++)
@@ -491,13 +481,12 @@ static void yieldThreadFunc(void *arg)
     }
 }
 
-void test_thread_yield(void)
+void test_thread_yield (void)
 {
     osal_thread_attr_t attr = {
         .name = "YieldThread",
         .stack_size = 4096,
-        .priority = OSAL_THREAD_PRIORITY_NORMAL
-    };
+        .priority = OSAL_THREAD_PRIORITY_NORMAL};
 
     osal_thread_handle_t thread = osal_thread_create(yieldThreadFunc, NULL, &attr);
     TEST_ASSERT_NOT_NULL(thread);
@@ -511,7 +500,7 @@ void test_thread_yield(void)
  * Main Test Runner
  * ============================================================================ */
 
-int main(void)
+int main (void)
 {
     UNITY_BEGIN();
 

@@ -5,8 +5,8 @@
 /* Includes */
 #include "osal/osal_semaphore.h"
 #include <dispatch/dispatch.h>
-#include <stdlib.h>
 #include <stdatomic.h>
+#include <stdlib.h>
 
 /* Internal Types */
 typedef struct
@@ -18,7 +18,7 @@ typedef struct
 
 /* Functions */
 
-osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
+osal_semaphore_handle_t osal_semaphore_create (const osal_semaphore_attr_t *attr)
 {
     osal_semaphore_control_block_t *cb;
     uint32_t initial_count = 0;
@@ -64,7 +64,7 @@ osal_semaphore_handle_t osal_semaphore_create(const osal_semaphore_attr_t *attr)
     return (osal_semaphore_handle_t)cb;
 }
 
-osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_delete (osal_semaphore_handle_t sem)
 {
     osal_semaphore_control_block_t *cb = (osal_semaphore_control_block_t *)sem;
 
@@ -86,7 +86,7 @@ osal_status_t osal_semaphore_delete(osal_semaphore_handle_t sem)
     return OSAL_SUCCESS;
 }
 
-osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_ms)
+osal_status_t osal_semaphore_take (osal_semaphore_handle_t sem, uint32_t timeout_ms)
 {
     osal_semaphore_control_block_t *cb = (osal_semaphore_control_block_t *)sem;
     dispatch_time_t timeout;
@@ -123,7 +123,7 @@ osal_status_t osal_semaphore_take(osal_semaphore_handle_t sem, uint32_t timeout_
     }
 }
 
-osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
+osal_status_t osal_semaphore_give (osal_semaphore_handle_t sem)
 {
     osal_semaphore_control_block_t *cb = (osal_semaphore_control_block_t *)sem;
 
@@ -138,7 +138,7 @@ osal_status_t osal_semaphore_give(osal_semaphore_handle_t sem)
     return OSAL_SUCCESS;
 }
 
-uint32_t osal_semaphore_get_count(osal_semaphore_handle_t sem)
+uint32_t osal_semaphore_get_count (osal_semaphore_handle_t sem)
 {
     osal_semaphore_control_block_t *cb = (osal_semaphore_control_block_t *)sem;
 

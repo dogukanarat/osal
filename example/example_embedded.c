@@ -23,7 +23,7 @@
 
 /* Functions */
 
-int main(void)
+int main (void)
 {
     int32_t multiplyResult = 0;
     char output[OUTPUT_BUFFER_SIZE];
