@@ -4,14 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-This is **osal** - a C library template/scaffold project designed to be cloned and migrated to create new C libraries. The workflow is:
+This is **osal** — an **OS Abstraction Layer**: a portable C API over RTOS/OS
+primitives (threads, mutexes, semaphores, message queues, event flags, dynamic
+memory, time) with interchangeable backends, so portable libraries built on it
+(e.g. `danp`, `cobs`, `c2`) run unmodified across targets.
 
-1. Clone this repository with a new library name
-2. Run `./scripts/migration.sh <NewLibName>` to rename all files and references (provide PascalCase name)
-3. Manually fix any TODOs (update descriptions, copyright, implement actual functionality)
-4. Build, test, and develop the new library
+- **Public API**: `include/osal/osal_<primitive>.h` (one header per primitive) +
+  `osal_types.h` for shared status codes.
+- **Backends**: `src/{zephyr,freertos,posix,macos}/` — each implements every
+  primitive once for its platform.
 
-**Critical**: When making changes to this scaffold, remember they will be used as templates for future libraries. Maintain consistency and clarity in all template files.
+When adding or changing a primitive, update **all** backends so they stay in sync,
+and keep the public header the single source of truth for the contract.
+
+> History: this repo began life as a CMake C-library scaffold (hence the
+> `scripts/migration.sh` rename helper and the generic CMake/CI tooling described
+> below), but it is now a real, fully-implemented multi-backend library. The
+> scaffold tooling still works for spinning up sibling libraries, but osal itself
+> is no longer a template to be migrated.
 
 ## Build Commands
 

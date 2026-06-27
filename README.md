@@ -1,10 +1,26 @@
 # osal
 
-A minimal scaffold template for creating CMake-based C libraries with proper installation support.
+A small **OS Abstraction Layer** (OSAL): a portable C API over the RTOS/OS
+primitives — threads, mutexes, semaphores, message queues, event flags, dynamic
+memory and time — with interchangeable backends. It lets the same protocol/library
+code (e.g. `danp`, `cobs`, `c2`) run unmodified on multiple targets.
 
 ## Overview
 
-This is a ready-to-use scaffold for creating C libraries with CMake. It provides a clean starting point with organized file structure and comprehensive build configuration.
+The public API lives in `include/osal/` (`osal_thread.h`, `osal_mutex.h`,
+`osal_semaphore.h`, `osal_message_queue.h`, `osal_event_flags.h`, `osal_memory.h`,
+`osal_time.h`, `osal_types.h`). Each primitive is implemented once per backend
+under `src/<backend>/`:
+
+- **`src/zephyr/`** — maps onto Zephyr kernel objects (`k_thread`, `k_mutex`,
+  `k_sem`, `k_msgq`, `k_event`, …). *(Note: on Zephyr the native primitives are
+  usually preferable; OSAL exists here to keep the vendored comms stack portable.)*
+- **`src/freertos/`** — FreeRTOS tasks/queues/semaphores.
+- **`src/posix/`** — POSIX threads + sync primitives (Linux/embedded POSIX).
+- **`src/macos/`** — POSIX variant for macOS host builds/tests.
+
+The CMake build, `find_package(osal)` support, Unity tests and CI described below
+are the library's own tooling.
 
 **Features:**
 - ✅ Organized directory structure (`src/`, `include/`, `test/`)
@@ -25,12 +41,20 @@ This is a ready-to-use scaffold for creating C libraries with CMake. It provides
 
 ```
 osal/
-├── include/osal/            # Public headers
-│   ├── osal.h               # Main API header
-│   └── osal_types.h         # Common types and definitions
-├── src/                            # Implementation
-│   ├── osal.c               # Core implementation
-│   └── osal_int.c           # Internal utilities
+├── include/osal/            # Public API headers (one per primitive)
+│   ├── osal_thread.h        #   threads
+│   ├── osal_mutex.h         #   mutexes
+│   ├── osal_semaphore.h     #   semaphores
+│   ├── osal_message_queue.h #   message queues
+│   ├── osal_event_flags.h   #   event flags
+│   ├── osal_memory.h        #   dynamic memory
+│   ├── osal_time.h          #   delays / ticks / wall-clock time
+│   └── osal_types.h         #   common status codes and types
+├── src/                            # One implementation per backend
+│   ├── zephyr/              #   Zephyr kernel objects
+│   ├── freertos/            #   FreeRTOS
+│   ├── posix/               #   POSIX threads
+│   └── macos/               #   macOS host
 ├── test/                           # Unit tests (Unity framework)
 │   ├── CMakeLists.txt              # Test build configuration
 │   ├── test_osal.c          # Example test file
